@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Puter Health Recommender</title>
+  <script src="https://js.puter.com/v2/"></script>
+</head>
+<body>
+
+<h1>Puter Health Recommender</h1>
+
+<form id="recommendForm">
+  <textarea name="logs" id="logs" rows="6" cols="40" placeholder="Enter mood, sleep, stress logs"></textarea>
+  <br><br>
+  <button type="submit">Get Recommendations</button>
+</form>
+
+<hr>
+
+<h2>Your Recommendations</h2>
+<ul>
+  <% recommendations.forEach(item => { %>
+    <li><%= item %></li>
+  <% }) %>
+</ul>
+
+</body>
+</html>
