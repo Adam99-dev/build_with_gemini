@@ -1,0 +1,147 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <defs>
+    <!-- Vibrant neon gradients -->
+    <linearGradient id="neonTeal" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#00fff9;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#2dd4bf;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#00d9ff;stop-opacity:1" />
+    </linearGradient>
+    
+    <linearGradient id="neonPink" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#ff006e;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#ff0080;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#ff1744;stop-opacity:1" />
+    </linearGradient>
+    
+    <linearGradient id="neonPurple" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#b388ff;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#7c4dff;stop-opacity:1" />
+    </linearGradient>
+    
+    <!-- Intense glow effects -->
+    <filter id="neonGlow">
+      <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    
+    <filter id="superGlow">
+      <feGaussianBlur stdDeviation="4" result="coloredBlur"/>
+      <feColorMatrix in="coloredBlur" type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 2 0"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    
+    <!-- Radial burst background -->
+    <radialGradient id="burstBg" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" style="stop-color:#1a1a2e;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#0a0a15;stop-opacity:1" />
+    </radialGradient>
+  </defs>
+  
+  <!-- Deep space background -->
+  <circle cx="32" cy="32" r="32" fill="url(#burstBg)"/>
+  
+  <!-- Energy rings (pulsating effect) -->
+  <circle cx="32" cy="32" r="28" fill="none" stroke="#00fff9" stroke-width="0.5" opacity="0.3">
+    <animate attributeName="r" values="28;30;28" dur="2s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" values="0.3;0.1;0.3" dur="2s" repeatCount="indefinite"/>
+  </circle>
+  <circle cx="32" cy="32" r="25" fill="none" stroke="#ff0080" stroke-width="0.5" opacity="0.3">
+    <animate attributeName="r" values="25;27;25" dur="2.5s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" values="0.3;0.1;0.3" dur="2.5s" repeatCount="indefinite"/>
+  </circle>
+  
+  <!-- Quantum particles floating -->
+  <g opacity="0.6">
+    <circle cx="12" cy="18" r="1" fill="#00fff9">
+      <animate attributeName="cy" values="18;22;18" dur="3s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0.6;1;0.6" dur="3s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="52" cy="24" r="1" fill="#ff0080">
+      <animate attributeName="cy" values="24;20;24" dur="2.5s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="48" cy="48" r="1" fill="#b388ff">
+      <animate attributeName="cx" values="48;52;48" dur="3.5s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="16" cy="46" r="1" fill="#00d9ff">
+      <animate attributeName="cy" values="46;42;46" dur="3s" repeatCount="indefinite"/>
+    </circle>
+  </g>
+  
+  <!-- Main heart shape with geometric twist -->
+  <g filter="url(#superGlow)">
+    <!-- Left heart chamber with faceted design -->
+    <path d="M 32 28 L 26 22 C 24 20 21 20 19 22 C 17 24 17 27 19 29 L 32 42" 
+          fill="none" 
+          stroke="url(#neonTeal)" 
+          stroke-width="3" 
+          stroke-linecap="round" 
+          stroke-linejoin="round"/>
+    
+    <!-- Right heart chamber -->
+    <path d="M 32 28 L 38 22 C 40 20 43 20 45 22 C 47 24 47 27 45 29 L 32 42" 
+          fill="none" 
+          stroke="url(#neonPink)" 
+          stroke-width="3" 
+          stroke-linecap="round" 
+          stroke-linejoin="round"/>
+    
+    <!-- Center geometric split -->
+    <line x1="32" y1="28" x2="32" y2="42" stroke="url(#neonPurple)" stroke-width="2" opacity="0.8"/>
+    
+    <!-- Heartbeat pulse through center -->
+    <path d="M 22 35 L 26 35 L 28 30 L 30 40 L 32 35 L 34 32 L 36 38 L 38 35 L 42 35" 
+          fill="none" 
+          stroke="#ffffff" 
+          stroke-width="2" 
+          stroke-linecap="round" 
+          stroke-linejoin="round"
+          opacity="0.9">
+      <animate attributeName="opacity" values="0.9;0.5;0.9" dur="1.5s" repeatCount="indefinite"/>
+    </path>
+  </g>
+  
+  <!-- Energy burst lines radiating from heart -->
+  <g filter="url(#neonGlow)" opacity="0.4">
+    <line x1="32" y1="32" x2="10" y2="10" stroke="#00fff9" stroke-width="1" stroke-linecap="round"/>
+    <line x1="32" y1="32" x2="54" y2="10" stroke="#ff0080" stroke-width="1" stroke-linecap="round"/>
+    <line x1="32" y1="32" x2="10" y2="54" stroke="#b388ff" stroke-width="1" stroke-linecap="round"/>
+    <line x1="32" y1="32" x2="54" y2="54" stroke="#00d9ff" stroke-width="1" stroke-linecap="round"/>
+  </g>
+  
+  <!-- Digital nodes at heart vertices -->
+  <g filter="url(#neonGlow)">
+    <circle cx="19" cy="22" r="2" fill="#00fff9"/>
+    <circle cx="45" cy="22" r="2" fill="#ff0080"/>
+    <circle cx="32" cy="42" r="2.5" fill="#b388ff"/>
+    <circle cx="32" cy="28" r="2" fill="#ffffff"/>
+  </g>
+  
+  <!-- Outer hexagonal tech frame -->
+  <polygon points="32,8 48,18 48,38 32,48 16,38 16,18" 
+           fill="none" 
+           stroke="#2dd4bf" 
+           stroke-width="0.5" 
+           opacity="0.3"/>
+  
+  <!-- Corner accent marks (cyberpunk style) -->
+  <g stroke="#00fff9" stroke-width="2" stroke-linecap="round" opacity="0.6">
+    <line x1="8" y1="8" x2="12" y2="8"/>
+    <line x1="8" y1="8" x2="8" y2="12"/>
+    
+    <line x1="56" y1="8" x2="52" y2="8"/>
+    <line x1="56" y1="8" x2="56" y2="12"/>
+    
+    <line x1="8" y1="56" x2="12" y2="56"/>
+    <line x1="8" y1="56" x2="8" y2="52"/>
+    
+    <line x1="56" y1="56" x2="52" y2="56"/>
+    <line x1="56" y1="56" x2="56" y2="52"/>
+  </g>
+</svg>

@@ -1,0 +1,297 @@
+/* ------------------------------------ */
+/* Global Reset and Typography */
+/* ------------------------------------ */
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: #0d1117;
+    color: #c9d1d9;
+}
+
+.header-bg {
+    background-color: #161b22;
+}
+
+/* ------------------------------------ */
+/* Dynamic Accent Colors (CSS Variables) */
+/* ------------------------------------ */
+:root {
+    --accent-color: #2dd4bf; /* Default: Teal */
+    --accent-color-hover: #14b8a6; 
+    --accent-text: #2dd4bf;
+}
+
+/* Utility classes mapping to CSS Variables */
+.accent-teal {
+    color: var(--accent-text);
+}
+
+.bg-accent-teal {
+    background-color: var(--accent-color);
+}
+
+.border-accent-teal {
+    border-color: var(--accent-color);
+}
+
+.color-accent-text { 
+    color: var(--accent-text); 
+}
+.color-bg-accent { 
+    background-color: var(--accent-color); 
+}
+.color-bg-accent-hover:hover { 
+    background-color: var(--accent-color-hover); 
+}
+
+/* ------------------------------------ */
+/* UI Components */
+/* ------------------------------------ */
+
+/* Enhanced Card Style with Hover Effect and Focus Ring */
+.card {
+    background-color: #161b22;
+    border-radius: 0.75rem;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.card:hover {
+    transform: scale(1.01);
+    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.3);
+}
+
+/* Single Page App View Switching */
+.view {
+    display: none;
+    min-height: calc(100vh - 80px);
+    padding-bottom: 5rem;
+}
+
+.view.active {
+    display: block;
+}
+
+/* Custom scrollbar for dark theme */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #0d1117;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #374151;
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #4b5563;
+}
+
+/* Modal Backdrop */
+.modal-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.9);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal-content {
+    background-color: #1f2937;
+    border-radius: 0.75rem;
+    max-width: 90%;
+    width: 450px;
+    padding: 1.5rem;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.7);
+    color: #c9d1d9;
+    animation: fadeIn 0.3s ease-out;
+}
+
+.modal-lg {
+    max-width: 90%;
+    width: 700px;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Chatbot icon fixed position */
+.chatbot-fixed {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    z-index: 50;
+    cursor: pointer;
+}
+
+/* Keyframe for subtle border animation */
+@keyframes pulse-border {
+    0% {
+        border-color: #2dd4bf30;
+    }
+
+    50% {
+        border-color: #2dd4bf70;
+    }
+
+    100% {
+        border-color: #2dd4bf30;
+    }
+}
+
+.animated-border-card {
+    animation: pulse-border 3s infinite ease-in-out;
+}
+
+/* Custom input style for forms with icons */
+.input-group {
+    position: relative;
+}
+
+.input-group input,
+.input-group select,
+.input-group textarea {
+    padding-left: 2.75rem !important;
+    transition: border-color 0.2s;
+}
+
+.input-group i {
+    position: absolute;
+    left: 0.75rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #9ca3af;
+    z-index: 10;
+}
+
+/* Adjust icon position when an input field is below a label */
+.input-group label+i {
+    top: calc(50% + 0.5rem);
+}
+
+/* Tool Card Minimum Height for consistent grid look */
+.tool-card {
+    min-height: 180px;
+}
+
+/* ------------------------------------ */
+/* Chatbot Styles */
+/* ------------------------------------ */
+.chat-container {
+    height: 60vh;
+    overflow-y: auto;
+    border: 1px solid #1f2937;
+    border-radius: 0.5rem;
+    padding: 1rem;
+    background-color: #1e2531;
+}
+
+.message {
+    margin-bottom: 0.75rem;
+    display: flex;
+}
+
+.user-message {
+    justify-content: flex-end;
+}
+
+.user-bubble {
+    background-color: var(--accent-color);
+    color: #0d1117;
+    padding: 0.6rem 1rem;
+    border-radius: 1.2rem 1.2rem 0.4rem 1.2rem;
+    max-width: 75%;
+    font-weight: 500;
+}
+
+.ai-bubble {
+    background-color: #374151;
+    color: #c9d1d9;
+    padding: 0.6rem 1rem;
+    border-radius: 1.2rem 1.2rem 1.2rem 0.4rem;
+    max-width: 75%;
+}
+
+/* AI Typing Indicator */
+.ai-typing {
+    display: flex;
+    align-items: center;
+    padding: 0.6rem 1rem;
+    background-color: #374151;
+    border-radius: 1.2rem 1.2rem 1.2rem 0.4rem;
+    max-width: fit-content;
+}
+
+.ai-typing i {
+    animation: bounce 0.6s infinite alternate;
+}
+
+@keyframes bounce {
+    0% { transform: translateY(0); }
+    100% { transform: translateY(-3px); }
+}
+
+/* Activity Dot Pulse Animation (for notifications/status) */
+@keyframes activity-pulse {
+    0% { box-shadow: 0 0 0 0 rgba(45, 212, 191, 0.7); }
+    70% { box-shadow: 0 0 0 8px rgba(45, 212, 191, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(45, 212, 191, 0); }
+}
+
+.activity-dot {
+    width: 8px;
+    height: 8px;
+    background-color: var(--accent-color);
+    border-radius: 50%;
+    animation: activity-pulse 2s infinite;
+    margin-right: 8px;
+}
+
+/* ------------------------------------ */
+/* Responsive Adjustments */
+/* ------------------------------------ */
+.score-item {
+    padding: 0.75rem;
+    border-radius: 0.5rem;
+    text-align: center;
+}
+
+@media (min-width: 768px) {
+    .score-item {
+        padding: 1rem;
+    }
+}
+
+/* Header User Info Truncation for small screens */
+@media (max-width: 768px) {
+    #user-info #user-greeting {
+        max-width: 100px; 
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+}
+@media (min-width: 768px) {
+    #user-info #user-greeting {
+        max-width: 150px; 
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+}
