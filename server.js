@@ -1,6 +1,6 @@
 /******************************************
- * HEALTH AI ASSISTANT — BACKEND (GENAI + ElevenLabs)
- * Uses @google/genai + @elevenlabs/elevenlabs-js
+ * HEALTH AI ASSISTANT — BACKEND
+ * (Gemini + ElevenLabs + StabilityAI)
  ******************************************/
 
 const express = require("express");
@@ -14,36 +14,37 @@ const { ElevenLabsClient } = require("@elevenlabs/elevenlabs-js");
 dotenv.config();
 const app = express();
 
-/*******************************
- * BASIC SETUP
- *******************************/
+/******************************************
+ * BASIC APP SETUP
+ ******************************************/
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(express.static("public"));
 app.set("view engine", "ejs");
 
+// Create folders if missing
 if (!fs.existsSync("public")) fs.mkdirSync("public");
 if (!fs.existsSync("uploads")) fs.mkdirSync("uploads");
 
 const upload = multer({ dest: "uploads/" });
 
-/*******************************
- * GEMINI (GENAI SDK)
- *******************************/
+/******************************************
+ * GEMINI CLIENT
+ ******************************************/
 const ai = new GoogleGenAI({
   apiKey: process.env.GEMINI_API_KEY,
 });
 
-/*******************************
- * ELEVENLABS TTS CLIENT
- *******************************/
+/******************************************
+ * ELEVENLABS CLIENT
+ ******************************************/
 const elevenlabs = new ElevenLabsClient({
   apiKey: process.env.ELEVEN_API_KEY,
 });
 
-/*******************************
- * SAFE RENDER VALUES
- *******************************/
+/******************************************
+ * DEFAULT TEMPLATE VALUES
+ ******************************************/
 function defaultRender(data = {}) {
   return {
     chatReply: "",
@@ -63,16 +64,18 @@ function saveBase64(base64, folder, filename) {
   return filepath;
 }
 
-/*******************************
+/******************************************
  * ROUTES
- *******************************/
+ ******************************************/
+
+// Home page
 app.get("/", (req, res) => {
   res.render("index", defaultRender());
 });
 
-/*******************************
- * 1. TEXT CHAT
- *******************************/
+/******************************************
+ * 1. TEXT CHAT (Gemini)
+ ******************************************/
 app.post("/chat", async (req, res) => {
   try {
     const text = req.body.text?.trim();
@@ -84,9 +87,8 @@ app.post("/chat", async (req, res) => {
     });
 
     const reply =
-      result.candidates?.[0]?.content?.parts
-        ?.map((p) => p.text || "")
-        .join("") || "No response received.";
+      result.candidates?.[0]?.content?.parts?.map((p) => p.text || "").join("") ||
+      "No response received.";
 
     res.render("index", defaultRender({ chatReply: reply }));
   } catch (err) {
@@ -94,9 +96,9 @@ app.post("/chat", async (req, res) => {
   }
 });
 
-/*******************************
- * 2. VOICE → STT → CHAT → TTS (ElevenLabs)
- *******************************/
+/******************************************
+ * 2. VOICE CHAT (STT → LLM → TTS)
+ ******************************************/
 app.post("/voice-chat", upload.single("audio"), async (req, res) => {
   try {
     if (!req.file) throw new Error("Upload an audio file.");
@@ -104,7 +106,7 @@ app.post("/voice-chat", upload.single("audio"), async (req, res) => {
     const base64 = fs.readFileSync(req.file.path).toString("base64");
     const mime = req.file.mimetype;
 
-    // ---------- Speech → Text (Gemini) ----------
+    /** Speech → Text (Gemini) **/
     const stt = await ai.models.generateContent({
       model: "gemini-2.5-flash",
       contents: [
@@ -118,42 +120,35 @@ app.post("/voice-chat", upload.single("audio"), async (req, res) => {
     });
 
     const transcript =
-      stt.candidates?.[0]?.content?.parts
-        ?.map((p) => p.text || "")
-        .join("") || "Could not transcribe.";
+      stt.candidates?.[0]?.content?.parts?.map((p) => p.text || "").join("") ||
+      "Could not transcribe.";
 
-    // ---------- Text → AI Response ----------
+    /** Text → LLM Reply **/
     const chat = await ai.models.generateContent({
       model: "gemini-2.5-flash",
       contents: transcript,
     });
 
     const reply =
-      chat.candidates?.[0]?.content?.parts
-        ?.map((p) => p.text || "")
-        .join("") || "No reply available.";
+      chat.candidates?.[0]?.content?.parts?.map((p) => p.text || "").join("") ||
+      "No reply available.";
 
-    // ---------- Text → Speech (ElevenLabs) ----------
-    const VOICE_ID = "JBFqnCBsd6RMkjVDRZzb"; // Rachel (free tier)
+    /** LLM Reply → TTS **/
+    const VOICE_ID = "JBFqnCBsd6RMkjVDRZzb"; // Rachel voice
 
     const audioStream = await elevenlabs.textToSpeech.convert(VOICE_ID, {
       text: reply,
       modelId: "eleven_multilingual_v2",
-      outputFormat: "mp3_44100_128", // high quality MP3
+      outputFormat: "mp3_44100_128",
     });
 
-    // Collect stream into buffer
     const chunks = [];
-    for await (const chunk of audioStream) {
-      chunks.push(chunk);
-    }
-    const audioBuffer = Buffer.concat(chunks);
-    const audioBase64 = audioBuffer.toString("base64");
+    for await (const chunk of audioStream) chunks.push(chunk);
 
+    const audioBase64 = Buffer.concat(chunks).toString("base64");
     const filename = `tts_${Date.now()}.mp3`;
-    saveBase64(audioBase64, "public", filename);
 
-    // Clean up uploaded file
+    saveBase64(audioBase64, "public", filename);
     fs.unlinkSync(req.file.path);
 
     res.render(
@@ -170,9 +165,9 @@ app.post("/voice-chat", upload.single("audio"), async (req, res) => {
   }
 });
 
-/*******************************
- * 3. MULTI-IMAGE VISION
- *******************************/
+/******************************************
+ * 3. MULTI-IMAGE VISION ANALYSIS (Gemini)
+ ******************************************/
 app.post("/vision-chat", upload.array("images", 5), async (req, res) => {
   try {
     if (!req.files?.length) throw new Error("Upload at least one image.");
@@ -195,9 +190,8 @@ app.post("/vision-chat", upload.array("images", 5), async (req, res) => {
     });
 
     const visionText =
-      result.candidates?.[0]?.content?.parts
-        ?.map((p) => p.text || "")
-        .join("") || "No result.";
+      result.candidates?.[0]?.content?.parts?.map((p) => p.text || "").join("") ||
+      "No result.";
 
     res.render(
       "index",
@@ -211,19 +205,19 @@ app.post("/vision-chat", upload.array("images", 5), async (req, res) => {
   }
 });
 
-/*******************************
- * 4. IMAGE GENERATION — Stability SDXL
- *******************************/
+/******************************************
+ * 4. IMAGE GENERATION (Stability SDXL)
+ ******************************************/
 app.post("/image-generate", async (req, res) => {
   try {
     const prompt = req.body.prompt?.trim();
     if (!prompt) throw new Error("Prompt cannot be empty.");
 
     const fetch = (await import("node-fetch")).default;
-
     const engineId = "stable-diffusion-xl-1024-v1-0";
-    const apiHost = process.env.API_HOST || "https://api.stability.ai";
+
     const apiKey = process.env.STABILITY_API_KEY;
+    const apiHost = process.env.API_HOST || "https://api.stability.ai";
 
     if (!apiKey) throw new Error("Missing Stability API key.");
 
@@ -232,24 +226,24 @@ app.post("/image-generate", async (req, res) => {
       {
         method: "POST",
         headers: {
-          "Content-Type": "application/json",
           Accept: "application/json",
+          "Content-Type": "application/json",
           Authorization: `Bearer ${apiKey}`,
         },
         body: JSON.stringify({
-          text_prompts: [{ text: prompt }],
           cfg_scale: 7,
-          height: 1024,
-          width: 1024,
           steps: 30,
           samples: 1,
+          height: 1024,
+          width: 1024,
+          text_prompts: [{ text: prompt }],
         }),
       }
     );
 
     if (!response.ok) {
-      const errText = await response.text();
-      throw new Error(`Stability API Error: ${errText}`);
+      const error = await response.text();
+      throw new Error(`Stability API Error: ${error}`);
     }
 
     const result = await response.json();
@@ -265,10 +259,10 @@ app.post("/image-generate", async (req, res) => {
   }
 });
 
-/*******************************
- * SERVER START
- *******************************/
+/******************************************
+ * START SERVER
+ ******************************************/
 const PORT = 3000;
 app.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`);
+  console.log(`Server running at http://localhost:${PORT}`);
 });
