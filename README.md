@@ -107,19 +107,3 @@ This backend can be deployed easily on:
 **Feel free to open an issue or submit a pull request.**
 
 ---
-
-## License
-
-**MIT License** — free to use, modify, and distribute.
-
----
-
-**If you want, I can also create:**
-
-- **A version with screenshots**
-- **A version with API documentation**
-- **A minimal/no-emoji version**
-- **A fancy styled GitHub README with badges**
-
-
-**Just tell me!**
