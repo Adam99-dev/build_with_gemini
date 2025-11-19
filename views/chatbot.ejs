@@ -1,0 +1,2076 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Health AI Assistant | PULSE</title>
+
+  <!-- Tailwind CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Inter Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- Lucide Icons -->
+  <script type="module" src="https://cdn.jsdelivr.net/npm/lucide@latest/dist/umd/lucide.js"></script>
+
+  <style>
+    :root {
+      --bg-primary: #0d1117;
+      --bg-header: #161b22;
+      --text-primary: #c9d1d9;
+      --text-secondary: #9ca3af;
+      --card-bg: #161b22;
+      --card-hover-bg: #1f2937;
+      --input-bg: #1f2937;
+      --input-border: #374151;
+      --modal-bg: #1f2937;
+      --accent-color: #2dd4bf;
+      --accent-color-hover: #14b8a6;
+      --accent-text: #2dd4bf;
+    }
+
+    [data-theme="light"] {
+      --bg-primary: #f9fafb;
+      --bg-header: #ffffff;
+      --text-primary: #1f2937;
+      --text-secondary: #6b7280;
+      --card-bg: #ffffff;
+      --card-hover-bg: #f3f4f6;
+      --input-bg: #ffffff;
+      --input-border: #d1d5db;
+      --modal-bg: #ffffff;
+      --accent-text: #2dd4bf;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: var(--bg-primary);
+      color: var(--text-primary);
+      transition: background-color 0.3s, color 0.3s;
+    }
+
+    .header-bg {
+      background-color: var(--bg-header);
+      transition: background-color 0.3s;
+    }
+
+    .card {
+      background-color: var(--card-bg);
+      border-radius: 0.75rem;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      border: 1px solid var(--input-border);
+    }
+
+    .card:hover {
+      transform: scale(1.01);
+      box-shadow: 0 8px 18px rgba(0, 0, 0, 0.3);
+    }
+
+    .color-bg-accent {
+      background-color: var(--accent-color);
+    }
+
+    .color-bg-accent-hover:hover {
+      background-color: var(--accent-color-hover);
+    }
+
+    .color-accent-text {
+      color: var(--accent-text);
+    }
+
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: var(--bg-primary);
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: var(--input-border);
+      border-radius: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: var(--text-secondary);
+    }
+
+    .preview-img {
+      width: 100%;
+      height: 140px;
+      object-fit: cover;
+      border-radius: 12px;
+      border: 1px solid var(--input-border);
+    }
+  </style>
+</head>
+
+<body class="min-h-screen">
+
+  <!-- ====================== NAVBAR (Exact same as home.ejs) ====================== -->
+  <header class="header-bg sticky top-0 z-40 shadow-xl border-b" style="border-color: var(--input-border);">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex justify-between items-center h-20">
+        <!-- Logo & Text -->
+        <a href="/" class="flex items-center space-x-2 flex-shrink-0" onclick="showView('home')"
+          aria-label="Go to Home">
+          <i data-lucide="activity" class="color-accent-text h-8 w-8"></i>
+          <div class="flex flex-col items-start leading-none">
+            <span class="text-2xl font-extrabold" style="color: var(--text-primary);">PULSE</span>
+            <span class="text-xs text-gray-400 font-light mt-0.5 hidden md:block">Personal Unified
+              Lifestyle</span>
+            <span class="text-xs text-gray-400 font-light hidden md:block">Smart Empowerment</span>
+          </div>
+        </a>
+
+        <!-- Navigation Links (Desktop) -->
+        <nav class="hidden md:flex items-center space-x-6 text-sm font-medium">
+
+          <div class="flex items-center space-x-4">
+            <a href="/" class="nav-link hover:text-white transition duration-150 text-gray-400"
+              data-view="home">Home</a>
+            <a href="/dashboard" class="nav-link hover:text-white transition duration-150 text-gray-400"
+              data-view="dashboard">Dashboard</a>
+            <a href="/booking" class="nav-link hover:text-white transition duration-150 text-gray-400"
+              data-view="booking">Booking</a>
+            <a href="/tools" class="nav-link hover:text-white transition duration-150 text-gray-400"
+              data-view="tools">Tools</a>
+            <a href="/environmental" class="nav-link hover:text-white transition duration-150 text-gray-400"
+              data-view="environmental">Environment</a>
+            <a href="/wellness" class="nav-link hover:text-white transition duration-150 text-gray-400"
+              data-view="wellness">Wellness</a>
+            <a href="/connect" class="nav-link hover:text-white transition duration-150 text-gray-400"
+              data-view="connect">Connect</a>
+          </div>
+          <button onclick="showView('subscription')"
+            class="px-3 py-1 text-sm font-semibold rounded-full bg-yellow-600 hover:bg-yellow-500 text-black transition duration-150 shadow-md flex items-center space-x-1 transform hover:scale-[1.05]">
+            <i data-lucide="crown" class="w-4 h-4"></i><span>Premium</span>
+          </button>
+        </nav>
+
+        <!-- Action Buttons -->
+        <div class="flex items-center space-x-6">
+
+          <div class="flex items-center space-x-4">
+
+            <!-- Settings Button -->
+            <button onclick="showSettingsModal()" title="Settings"
+              class="p-2 rounded-full text-gray-400 hover:bg-gray-700 transition duration-150 transform hover:scale-110">
+              <i data-lucide="settings" class="w-5 h-5"></i>
+            </button>
+
+            <!-- Quick link to Device Hub -->
+            <button onclick="showDeviceLinkModal()" title="Link Smart Device"
+              class="p-2 rounded-full text-green-400 hover:bg-gray-700 transition duration-150 transform hover:scale-110 hidden sm:block">
+              <i data-lucide="watch" class="w-5 h-5"></i>
+            </button>
+
+            <!-- SOS Button -->
+            <button onclick="showMentalHealthCrisisModal()" title="Emergency Crisis Intervention"
+              class="flex-shrink-0 bg-red-600 hover:bg-red-700 p-2 rounded-full transition duration-150 shadow-lg transform hover:scale-110"
+              aria-label="Emergency Crisis Intervention">
+              <i data-lucide="alert-triangle" class="w-5 h-5 text-white"></i>
+            </button>
+          </div>
+
+          <!-- User/Auth Group -->
+          <div class="hidden md:flex items-center space-x-6">
+            <!-- User Greeting and Logout (Dynamically Managed) -->
+            <div id="user-info" class="hidden items-center space-x-3 text-sm font-medium">
+              <span id="user-greeting" class="text-gray-400 font-semibold">Welcome Back!</span>
+              <button onclick="signOutUser()"
+                class="flex-shrink-0 px-3 py-1 text-xs font-semibold rounded-full text-red-300 border border-red-600 hover:bg-red-900 transition duration-150"
+                aria-label="Sign Out">
+                Sign Out
+              </button>
+            </div>
+
+            <!-- Login/Sign Up Buttons (Dynamically Managed) -->
+            <div id="auth-buttons" class="flex items-center space-x-4">
+              <button onclick="showAuthModal('login')"
+                class="px-4 py-2 text-sm font-semibold rounded-full text-gray-200 border border-gray-600 hover:bg-gray-700 transition duration-150 shadow-md transform hover:scale-[1.05]"
+                aria-label="Login">
+                Login
+              </button>
+              <button onclick="showAuthModal('signup')"
+                class="color-bg-accent color-bg-accent-hover text-black px-4 py-2 text-sm font-bold rounded-full transition duration-150 shadow-lg transform hover:scale-[1.05]"
+                aria-label="Sign Up">
+                Sign Up
+              </button>
+            </div>
+          </div>
+
+          <!-- Mobile Menu Button -->
+          <button class="md:hidden p-2 rounded-lg hover:bg-gray-700" onclick="toggleMobileMenu()"
+            aria-label="Toggle Mobile Menu">
+            <i data-lucide="menu" class="w-6 h-6 text-gray-300"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Mobile Menu (Hidden by default) -->
+    <div id="mobile-menu" class="hidden md:hidden pb-4 px-4 header-bg border-t"
+      style="border-color: var(--input-border);">
+      <div class="flex flex-col space-y-2 pt-2 text-center">
+        <a href="/" onclick="showView('home'); toggleMobileMenu();"
+          class="py-2 text-gray-300 hover:bg-gray-700 rounded-md">Home</a>
+        <a href="/dashboard" onclick="showView('dashboard'); toggleMobileMenu();"
+          class="py-2 text-gray-300 hover:bg-gray-700 rounded-md">Dashboard</a>
+        <a href="/booking" onclick="showView('booking'); toggleMobileMenu();"
+          class="py-2 text-gray-300 hover:bg-gray-700 rounded-md">Booking</a>
+        <a href="/tools" onclick="showView('tools'); toggleMobileMenu();"
+          class="py-2 text-gray-300 hover:bg-gray-700 rounded-md">Tools</a>
+        <a href="/environmental" onclick="showView('environmental'); toggleMobileMenu();"
+          class="py-2 text-gray-300 hover:bg-gray-700 rounded-md">Environmental</a>
+        <a href="/wellness" onclick="showView('wellness'); toggleMobileMenu();"
+          class="py-2 text-gray-300 hover:bg-gray-700 rounded-md">Wellness</a>
+        <a href="/connect" onclick="showView('connect'); toggleMobileMenu();"
+          class="py-2 text-gray-300 hover:bg-gray-700 rounded-md">Connect</a>
+        <a href="" onclick="showView('subscription'); toggleMobileMenu();"
+          class="py-2 text-yellow-500 hover:bg-gray-700 rounded-md flex items-center justify-center space-x-2">
+          <i data-lucide="crown" class="w-4 h-4 text-yellow-500"></i><span>Premium</span>
+        </a>
+        <button onclick="showAuthModal('login'); toggleMobileMenu();"
+          class="py-2 text-gray-300 hover:bg-gray-700 rounded-md border-t border-gray-800 mt-2">Login</button>
+        <button onclick="showAuthModal('signup'); toggleMobileMenu();"
+          class="color-bg-accent color-bg-accent-hover text-black font-semibold rounded-md">Sign Up</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+
+    <div class="text-center mb-12">
+      <h1 class="text-5xl md:text-6xl font-extrabold mb-4">
+        Health <span class="color-accent-text">AI Assistant</span>
+      </h1>
+      <p class="text-xl text-gray-400">Your personal wellness companion – now with voice, vision & image generation</p>
+    </div>
+
+    <!-- ====================== 1. TEXT CHAT ====================== -->
+    <div class="card p-8 mb-10">
+      <h2 class="text-2xl font-bold mb-6 flex items-center gap-3">
+        <i data-lucide="message-circle" class="w-8 h-8 color-accent-text"></i>
+        <span>Text Chat</span>
+      </h2>
+
+      <form method="POST" action="/chat" class="space-y-6">
+        <textarea name="text" rows="4" required placeholder="Ask anything about health, diet, symptoms..."
+          class="w-full p-4 rounded-xl bg-[var(--input-bg)] border border-[var(--input-border)] focus:border-[var(--accent-color)] focus:ring-2 focus:ring-[var(--accent-color)] transition"></textarea>
+
+        <button type="submit"
+          class="w-full color-bg-accent color-bg-accent-hover text-black font-bold py-4 rounded-xl text-lg flex items-center justify-center gap-3 transform hover:scale-[1.02] transition shadow-lg">
+          <i data-lucide="send" class="w-5 h-5"></i>
+          <span>Ask AI</span>
+        </button>
+      </form>
+
+      <% if (typeof chatReply !=='undefined' ) { %>
+        <div class="mt-8 p-6 bg-[var(--card-hover-bg)] rounded-xl border-l-4 border-[var(--accent-color)]">
+          <div class="flex justify-between items-start mb-3">
+            <strong class="color-accent-text text-lg">AI Response</strong>
+            <button class="copy-btn text-gray-400 hover:text-white" data-text="<%= chatReply %>">
+              <i data-lucide="copy" class="w-5 h-5"></i>
+            </button>
+          </div>
+          <p class="text-[var(--text-primary)] leading-relaxed whitespace-pre-wrap">
+            <%= chatReply %>
+          </p>
+        </div>
+        <% } %>
+    </div>
+
+    <!-- ====================== 2. VOICE CHAT ====================== -->
+    <div class="card p-8 mb-10">
+      <h2 class="text-2xl font-bold mb-6 flex items-center gap-3">
+        <i data-lucide="mic" class="w-8 h-8 color-accent-text"></i>
+        <span>Voice Chat</span>
+      </h2>
+
+      <form id="voiceForm" action="/voice-chat" method="POST" enctype="multipart/form-data" class="space-y-6">
+        <input type="file" name="audio" accept="audio/*" class="hidden" id="audioFileInput" />
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <label for="audioFileInput"
+            class="cursor-pointer p-6 rounded-xl border-2 border-dashed border-[var(--accent-color)] bg-[var(--card-hover-bg)] text-center hover:bg-[var(--input-bg)] transition">
+            <i data-lucide="upload" class="w-10 h-10 color-accent-text mx-auto mb-3"></i>
+            <span class="font-semibold">Upload Audio</span>
+          </label>
+
+          <button type="button" id="recordBtn"
+            class="p-6 rounded-xl bg-gradient-to-r from-red-600 to-pink-600 text-white font-bold flex items-center justify-center gap-3 hover:from-red-700 hover:to-pink-700 transition shadow-lg">
+            <i data-lucide="mic" id="micIcon" class="w-8 h-8"></i>
+            <span id="recordText">Hold to Record</span>
+          </button>
+        </div>
+
+        <div id="recordingStatus" class="hidden text-center text-red-400 font-bold">
+          Recording... <span id="timer">0:00</span>
+        </div>
+
+        <button type="submit" id="submitVoiceBtn" disabled
+          class="w-full bg-gray-700 hover:bg-gray-600 text-white py-4 rounded-xl font-bold opacity-50 cursor-not-allowed transition flex items-center justify-center gap-3">
+          <i data-lucide="headphones" class="w-5 h-5"></i>
+          Get AI Voice Reply
+        </button>
+      </form>
+
+      <% if (typeof fromVoice !=='undefined' && fromVoice ) { %>
+        <div class="mt-6 p-5 bg-[var(--card-hover-bg)] rounded-xl border-l-4 border-green-500">
+          <strong class="text-green-400">Transcribed Voice:</strong>
+          <p class="mt-2">
+            <%= fromVoice %>
+          </p>
+        </div>
+        <% } %>
+
+          <% if (typeof audioUrl !=='undefined' && audioUrl ) { %>
+            <div class="mt-6 p-5 bg-[var(--card-hover-bg)] rounded-xl border-l-4 border-[var(--accent-color)]">
+              <strong class="color-accent-text text-lg">AI Voice Response</strong>
+              <audio controls class="w-full mt-4 h-12">
+                <source src="<%= audioUrl %>" type="audio/mp3">
+              </audio>
+            </div>
+            <% } %>
+    </div>
+
+    <!-- ====================== 3. IMAGE VISION ANALYSIS ====================== -->
+    <div class="card p-8 mb-10">
+      <h2 class="text-2xl font-bold mb-6 flex items-center gap-3">
+        <i data-lucide="eye" class="w-8 h-8 color-accent-text"></i>
+        <span>Image Analysis (up to 5 images)</span>
+      </h2>
+
+      <form id="visionForm" action="/vision-chat" method="POST" enctype="multipart/form-data" class="space-y-6">
+        <div id="dropZone"
+          class="p-12 border-3 border-dashed border-[var(--accent-color)] bg-[var(--card-hover-bg)] rounded-2xl text-center cursor-pointer hover:bg-[var(--input-bg)] transition">
+          <i data-lucide="image" class="w-16 h-16 color-accent-text mx-auto mb-4"></i>
+          <p class="text-lg font-bold color-accent-text">Drop Images Here</p>
+          <p class="text-sm text-gray-400">or click to select (max 5)</p>
+          <input type="file" id="imageInput" name="images" accept="image/*" multiple class="hidden" />
+        </div>
+
+        <div id="previewContainer" class="grid grid-cols-2 md:grid-cols-4 gap-4"></div>
+
+        <textarea name="prompt" rows="3" placeholder="What do you want to know about these images?"
+          class="w-full p-4 rounded-xl bg-[var(--input-bg)] border border-[var(--input-border)] focus:border-[var(--accent-color)] focus:ring-2 focus:ring-[var(--accent-color)] transition"></textarea>
+
+        <button type="submit"
+          class="w-full color-bg-accent color-bg-accent-hover text-black font-bold py-4 rounded-xl text-lg flex items-center justify-center gap-3 transform hover:scale-[1.02] transition shadow-lg">
+          <i data-lucide="sparkles" class="w-6 h-6"></i>
+          Analyze with AI
+        </button>
+      </form>
+
+      <% if (typeof visionAnalysis !=='undefined' && visionAnalysis ) { %>
+        <div class="mt-8 p-6 bg-[var(--card-hover-bg)] rounded-xl border-l-4 border-purple-500">
+          <strong class="text-purple-400 text-lg">Vision AI Analysis</strong>
+          <pre class="mt-3 text-[var(--text-primary)] whitespace-pre-wrap"><%= visionAnalysis %></pre>
+        </div>
+        <% } %>
+    </div>
+
+    <!-- ====================== 4. IMAGE GENERATOR ====================== -->
+    <div class="card p-8">
+      <h2 class="text-2xl font-bold mb-6 flex items-center gap-3">
+        <i data-lucide="wand-2" class="w-8 h-8 color-accent-text"></i>
+        <span>AI Image Generator</span>
+      </h2>
+
+      <form method="POST" action="/image-generate" class="space-y-6">
+        <textarea name="prompt" rows="3" required
+          placeholder="Describe the image you want (e.g., healthy Mediterranean meal, yoga pose at sunrise...)"
+          class="w-full p-4 rounded-xl bg-[var(--input-bg)] border border-[var(--input-border)] focus:border-[var(--accent-color)] focus:ring-2 focus:ring-[var(--accent-color)] transition"></textarea>
+
+        <button type="submit"
+          class="w-full bg-gradient-to-r from-orange-600 to-red-600 hover:from-orange-700 hover:to-red-700 text-white font-bold py-4 rounded-xl text-lg flex items-center justify-center gap-3 transform hover:scale-[1.02] transition shadow-lg">
+          <i data-lucide="image-plus" class="w-6 h-6"></i>
+          Generate Image
+        </button>
+      </form>
+
+      <% if (typeof generatedImage !=='undefined' && generatedImage) { %>
+        <div class="mt-8 text-center">
+          <img src="<%= generatedImage %>"
+            class="mx-auto max-w-full rounded-2xl shadow-2xl border border-[var(--input-border)]">
+        </div>
+        <% } %>
+
+          <% if (typeof error !=='undefined' && error) { %>
+            <div class="mt-10 animate__animated animate__shakeX">
+              <div
+                class="relative rounded-3xl overflow-hidden bg-red-950/40 backdrop-blur-xl border-2 border-red-500/60 shadow-2xl ring-4 ring-red-500/20">
+                <div class="absolute inset-0 bg-gradient-to-br from-red-600/20 via-transparent to-rose-600/20"></div>
+
+                <div class="relative p-10 flex items-center gap-6">
+                  <div class="relative">
+                    <div class="absolute inset-0 bg-red-500 rounded-full blur-3xl animate-ping opacity-50"></div>
+                    <div class="relative p-5 bg-red-600/30 rounded-3xl backdrop-blur">
+                      <i data-lucide="zap" class="w-14 h-14 text-red-300 rotate-12"></i>
+                    </div>
+                  </div>
+
+                  <div>
+                    <h3 class="text-3xl font-extrabold text-red-300 mb-3">Error Occurred</h3>
+                    <p class="text-xl text-red-200 font-medium max-w-4xl">
+                      <%= error %>
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <% } %>
+    </div>
+  </main>
+
+  <!-- ============================= -->
+  <!-- JS: IMAGE PREVIEW + COPY + VOICE RECORDING -->
+  <!-- ============================= -->
+  <script>
+    // === IMAGE PREVIEW ===
+    const dropZone = document.getElementById("dropZone");
+    const imageInput = document.getElementById("imageInput");
+    const previewContainer = document.getElementById("previewContainer");
+
+    dropZone.onclick = () => imageInput.click();
+
+    ['dragover', 'dragenter'].forEach(evt => {
+      dropZone.addEventListener(evt, e => {
+        e.preventDefault();
+        dropZone.classList.add("ring-4", "ring-purple-400", "bg-purple-100");
+      });
+    });
+
+    ['dragleave', 'dragend', 'drop'].forEach(evt => {
+      dropZone.addEventListener(evt, e => {
+        dropZone.classList.remove("ring-4", "ring-purple-400", "bg-purple-100");
+      });
+    });
+
+    dropZone.addEventListener("drop", e => {
+      e.preventDefault();
+      imageInput.files = e.dataTransfer.files;
+      previewImages();
+    });
+
+    imageInput.addEventListener("change", previewImages);
+
+    function previewImages() {
+      previewContainer.innerHTML = "";
+      [...imageInput.files].slice(0, 5).forEach((file, i) => {
+        const reader = new FileReader();
+        reader.onload = e => {
+          const div = document.createElement("div");
+          div.className = "relative group overflow-hidden rounded-xl shadow-lg";
+          const img = document.createElement("img");
+          img.src = e.target.result;
+          img.className = "preview-img w-full h-32 object-cover transition-transform group-hover:scale-110 duration-500";
+          const badge = document.createElement("div");
+          badge.className = "absolute top-2 right-2 bg-purple-600 text-white text-xs font-bold px-2 py-1 rounded-full";
+          badge.textContent = i + 1;
+          div.appendChild(img);
+          div.appendChild(badge);
+          previewContainer.appendChild(div);
+        };
+        reader.readAsDataURL(file);
+      });
+    }
+
+    // === COPY TO CLIPBOARD ===
+    function copyToClipboard(btn, text) {
+      navigator.clipboard.writeText(text).then(() => {
+        const icon = btn.querySelector('svg');
+        icon.classList.replace('stroke-current', 'stroke-green-600');
+        setTimeout(() => icon.classList.replace('stroke-green-600', 'stroke-current'), 2000);
+      });
+    }
+
+    document.querySelectorAll('.copy-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const text = btn.getAttribute('data-text');
+        copyToClipboard(btn, text);
+      });
+    });
+
+    // === VOICE RECORDING ===
+    let mediaRecorder;
+    let audioChunks = [];
+    let timerInterval;
+    let seconds = 0;
+
+    const recordBtn = document.getElementById('recordBtn');
+    const micIcon = document.getElementById('micIcon');
+    const recordText = document.getElementById('recordText');
+    const recordingStatus = document.getElementById('recordingStatus');
+    const timerEl = document.getElementById('timer');
+    const submitBtn = document.getElementById('submitVoiceBtn');
+    const audioFileInput = document.getElementById('audioFileInput');
+
+    function formatTime(sec) {
+      const m = String(Math.floor(sec / 60)).padStart(2, '0');
+      const s = String(sec % 60).padStart(2, '0');
+      return `${m}:${s}`;
+    }
+
+    function startRecording(e) {
+      e.preventDefault();
+      navigator.mediaDevices.getUserMedia({ audio: true })
+        .then(stream => {
+          mediaRecorder = new MediaRecorder(stream);
+          audioChunks = [];
+
+          mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
+          mediaRecorder.onstop = () => {
+            const blob = new Blob(audioChunks, { type: 'audio/webm' });
+            const file = new File([blob], "recorded-voice.webm", { type: "audio/webm" });
+            const dt = new DataTransfer();
+            dt.items.add(file);
+            audioFileInput.files = dt.files;
+
+            submitBtn.disabled = false;
+            submitBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+            submitBtn.classList.add('hover:from-green-700', 'hover:to-emerald-700');
+          };
+
+          mediaRecorder.start();
+          recordBtn.classList.add('ring-4', 'ring-red-400', 'scale-95');
+          micIcon.innerHTML = `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 9a3 3 0 100-6 3 3 0 000 6zm0 0v6m0 0a3 3 0 006 0v-6m-6 0H8" />`;
+          recordText.textContent = "Recording...";
+          recordingStatus.classList.remove('hidden');
+          seconds = 0;
+          timerEl.textContent = "0:00";
+          timerInterval = setInterval(() => {
+            seconds++;
+            timerEl.textContent = formatTime(seconds);
+          }, 1000);
+        })
+        .catch(err => {
+          alert("Microphone access denied. Please allow microphone.");
+          console.error(err);
+        });
+    }
+
+    function stopRecording() {
+      if (mediaRecorder && mediaRecorder.state === "recording") {
+        mediaRecorder.stop();
+        mediaRecorder.stream.getTracks().forEach(t => t.stop());
+        clearInterval(timerInterval);
+        recordBtn.classList.remove('ring-4', 'ring-red-400', 'scale-95');
+        micIcon.innerHTML = `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />`;
+        recordText.textContent = "Hold to Record";
+        recordingStatus.classList.add('hidden');
+      }
+    }
+
+    recordBtn.addEventListener('mousedown', startRecording);
+    recordBtn.addEventListener('touchstart', startRecording);
+    recordBtn.addEventListener('mouseup', stopRecording);
+    recordBtn.addEventListener('mouseleave', stopRecording);
+    recordBtn.addEventListener('touchend', stopRecording);
+
+    audioFileInput.addEventListener('change', () => {
+      if (audioFileInput.files.length > 0) {
+        submitBtn.disabled = false;
+        submitBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+        submitBtn.classList.add('hover:from-green-700', 'hover:to-emerald-700');
+      }
+    });
+
+    // === AUDIO PLAYER STYLE ===
+    const style = document.createElement('style');
+    style.textContent = `
+      .custom-audio::-webkit-media-controls-panel { 
+        background: linear-gradient(to right, #ccfbff, #a78bfa); 
+        border-radius: 12px;
+      }
+      .animate-fadeIn { 
+        animation: fadeIn 0.6s ease-out; 
+      }
+      @keyframes fadeIn { 
+        from { opacity: 0; transform: translateY(10px); } 
+        to { opacity: 1; transform: translateY(0); } 
+      }
+    `;
+    document.head.appendChild(style);
+
+    // =======================================================
+    // 1. GLOBAL STATE & DATA DECLARATIONS
+    // =======================================================
+
+    // FIXED: Removed server-side middleware function from client code
+    let isLoggedIn = false; // Changed from function to proper state variable
+    let loggedInUser = '';
+    let plannerChartInstance = null;
+    let dashboardChartInstance = null;
+    let currentTheme = 'dark';
+
+    const mockGoals = [
+      { id: 1, name: "Daily Steps (10,000)", target: 10000, current: 7500, type: "Activity" },
+      { id: 2, name: "Sleep Avg (8 hours)", target: 8, current: 8.25, type: "Sleep" },
+      { id: 3, name: "Strength Training (3x/wk)", target: 3, current: 2, type: "Workout" },
+    ];
+    let nextGoalId = 4;
+
+    let mockActivities = [
+      { id: 1, metric: "STEPS", value: 15000, date: new Date().toLocaleDateString(), type: "Activity" },
+      { id: 2, metric: "SLEEP", value: "8 hours", date: new Date(Date.now() - 86400000).toLocaleDateString(), type: "Sleep" },
+      { id: 3, metric: "BP", value: "130/85", date: new Date(Date.now() - 2 * 86400000).toLocaleDateString(), type: "Health" },
+    ];
+    let nextActivityId = 4;
+
+    let mockMedications = [
+      { id: 101, name: "Metformin (500mg)", schedule: "8:00 AM Daily", status: "Active", adherence: 88, nextDose: "8:00 AM", dosage: "500mg", frequency: "Daily" },
+      { id: 102, name: "Vitamin D (1000 IU)", schedule: "1:00 PM Daily", status: "Active", adherence: 95, nextDose: "1:00 PM", dosage: "1000 IU", frequency: "Daily" },
+      { id: 103, name: "Aspirin (81mg)", schedule: "6:00 PM Daily", status: "Active", adherence: 75, nextDose: "6:00 PM", dosage: "81mg", frequency: "Daily" },
+      { id: 104, name: "Amoxicillin", schedule: "2x/Day for 7 days", status: "Completed", adherence: 100, nextDose: "-", dosage: "250mg", frequency: "Twice Daily" },
+    ];
+    let nextMedicationId = 105;
+
+    let hasNewActivity = false;
+
+    let healthScores = {
+      activity: 92,
+      sleep: 85,
+      stress: 79,
+      nutrition: 95
+    };
+
+    const NUTRITION_TASKS = [
+      { name: 'Log Dinner (Target: 600 kcal)', completed: false, icon: 'apple' },
+      { name: 'Drink 8 glasses of water', completed: true, icon: 'droplet' },
+      { name: 'Review Macro Breakdown', completed: false, icon: 'utensils' },
+      { name: 'Take multivitamin', completed: true, icon: 'milk' }
+    ];
+
+    const WORKOUT_TASKS = [
+      { name: 'Complete Leg Day Routine', completed: false, icon: 'run' },
+      { name: 'Log 1 hour yoga session', completed: true, icon: 'dumbbell' },
+      { name: 'Set recovery day reminder', completed: false, icon: 'stretching' },
+      { name: 'Check heart rate zones', completed: false, icon: 'heart-pulse' }
+    ];
+
+    // FIXED: Added placeholder for API key with clear instructions
+    const apiKey = "YOUR_GEMINI_API_KEY_HERE"; // Replace with actual API key
+    const geminiUrl = (model) => `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
+
+    let isListening = false;
+    let recognition = null;
+    let base64ImageFile = null;
+
+    // =======================================================
+    // 2. AUTH STATUS CHECK (FIXED)
+    // =======================================================
+
+    async function checkAuthStatus() {
+      const token = localStorage.getItem('token');
+      const savedUser = localStorage.getItem('user');
+
+      // If no token at all → definitely not logged in
+      if (!token) {
+        setLoggedIn(false);
+        return;
+      }
+
+      // If we have token + saved user → auto-login (offline mode safe)
+      if (savedUser) {
+        try {
+          const userData = JSON.parse(savedUser);
+          const username = userData.name || userData.email?.split('@')[0] || 'User';
+          setLoggedIn(true, username);
+          console.log('Auto-logged in from localStorage:', username);
+          return; // Success → exit early
+        } catch (e) {
+          console.warn('Failed to parse saved user data');
+        }
+      }
+
+      // Only try server verification if online + backend exists
+      if (navigator.onLine) {
+        try {
+          const response = await fetch('/auth/verify', {
+            method: 'GET',
+            headers: {
+              'Authorization': `Bearer ${token}`
+            },
+            credentials: 'include'
+          });
+
+          if (response.ok) {
+            const userData = await response.json();
+            const username = userData.name || userData.email?.split('@')[0] || 'User';
+            localStorage.setItem('user', JSON.stringify(userData)); // Update saved user
+            setLoggedIn(true, username);
+            return;
+          }
+        } catch (error) {
+          console.warn('Server unreachable or verify failed (normal in offline mode):', error.message);
+          // Don't logout just because server is down!
+        }
+      }
+
+      // Final fallback: if we have a token, assume logged in (offline-friendly)
+      if (token) {
+        const fallbackName = token.substring(0, 8) + '...'; // or decode JWT if needed
+        setLoggedIn(true, 'User');
+        console.log('Logged in via token only (offline mode)');
+      } else {
+        setLoggedIn(false);
+      }
+    }
+
+    // =======================================================
+    // 3. GLOBALLY ACCESSED FUNCTIONS
+    // =======================================================
+
+    function toggleMobileMenu() {
+      const menu = document.getElementById('mobile-menu');
+      if (menu) {
+        menu.classList.toggle('hidden');
+      }
+    }
+
+    function showAuthModal(mode = 'login') {
+      const authModal = document.getElementById('auth-modal-backdrop');
+      if (authModal) {
+        authModal.style.display = 'flex';
+        switchAuthMode(null, mode);
+        if (typeof lucide !== 'undefined') { lucide.createIcons(); }
+      }
+    }
+
+    function hideAuthModal() {
+      const authModal = document.getElementById('auth-modal-backdrop');
+      if (authModal) {
+        authModal.style.display = 'none';
+      }
+    }
+
+    function switchAuthMode(event, mode) {
+      if (event) event.preventDefault();
+      const loginForm = document.getElementById('login-form');
+      const signupForm = document.getElementById('signup-form');
+      const title = document.getElementById('auth-title');
+      const switchToSignupLink = document.getElementById('switch-to-signup');
+      const switchToLoginLink = document.getElementById('switch-to-login');
+
+      if (mode === 'login') {
+        loginForm?.classList.remove('hidden');
+        signupForm?.classList.add('hidden');
+        if (title) title.textContent = 'Login to PULSE';
+        switchToSignupLink?.classList.remove('hidden');
+        switchToLoginLink?.classList.add('hidden');
+      } else {
+        loginForm?.classList.add('hidden');
+        signupForm?.classList.remove('hidden');
+        if (title) title.textContent = 'Create PULSE Account';
+        switchToSignupLink?.classList.add('hidden');
+        switchToLoginLink?.classList.remove('hidden');
+      }
+      if (typeof lucide !== 'undefined') lucide.createIcons();
+    }
+
+    async function signOutUser() {
+      try {
+        await fetch('/logout', {
+          method: 'POST',
+          credentials: 'include'
+        });
+      } catch (err) {
+        console.warn('Logout request failed (offline OK)', err);
+      } finally {
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');  // ← Add this line!
+        setLoggedIn(false);
+        showModal('Signed Out', 'You have been securely logged out.', 'Login Again');
+        showView('home');
+      }
+    }
+
+    function showMentalHealthCrisisModal() {
+      const content = `
+        <button onclick="hideModal()" class="float-right text-gray-400 hover:text-white text-3xl leading-none" aria-label="Close crisis intervention modal">&times;</button>
+        <h3 class="text-2xl font-bold mb-4 text-red-400 flex items-center space-x-2"><i data-lucide="alert-triangle" class="w-7 h-7"></i><span>Immediate Crisis Intervention</span></h3>
+        <p class="text-white mb-4" style="color: var(--text-primary);">If you are facing an emergency or feeling unsafe, please choose the option below that best supports you right now. **We are here to listen.**</p>
+        <div class="space-y-4">
+            <button onclick="crisisAction('Emergency Services')" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 rounded-lg transition duration-150 flex items-center justify-center space-x-2">
+                <i data-lucide="phone" class="w-5 h-5"></i><span>Call Emergency Services (108/102)</span>
+            </button>
+            <button onclick="crisisAction('National Helpline')" class="w-full bg-yellow-600 hover:bg-yellow-700 text-black font-bold py-3 rounded-lg transition duration-150 flex items-center justify-center space-x-2">
+                <i data-lucide="message-square" class="w-5 h-5"></i><span>Connect to National Helpline (Chat/Call)</span>
+            </button>
+            <button onclick="crisisAction('Emergency Contact')" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 rounded-lg transition duration-150 flex items-center justify-center space-x-2">
+                <i data-lucide="user-plus" class="w-5 h-5"></i><span>Alert Emergency Contact</span>
+            </button>
+        </div>
+        <div class="mt-6 p-4 rounded-lg bg-gray-800 border" style="border-color: var(--input-border);">
+            <h4 class="text-base font-semibold mb-2" style="color: var(--text-primary);">Feeling Overwhelmed?</h4>
+            <p class="text-xs text-gray-400">If you are not in immediate danger, consider using the <button onclick="hideModal(); showView('wellness')" class="text-pink-400 underline">Wellness Studio</button> or talking to our <button onclick="hideModal(); showView('chatbot')" class="color-accent-text underline">AI Assistant</button> for immediate de-stressing techniques.</p>
+        </div>
+        <p class="text-gray-500 text-xs mt-4 text-center">Your privacy is paramount. This information is used solely for intervention purposes.</p>
+    `;
+      const modalContent = document.getElementById('universal-modal-content');
+      if (modalContent) {
+        modalContent.innerHTML = content;
+        modalContent.classList.remove('modal-lg');
+        document.getElementById('universal-modal-backdrop').style.display = 'flex';
+        if (typeof lucide !== 'undefined') { lucide.createIcons(); }
+      }
+    }
+
+    // =======================================================
+    // 4. UTILITY FUNCTIONS
+    // =======================================================
+
+    function fileToBase64(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = () => resolve(reader.result.split(',')[1]);
+        reader.onerror = error => reject(error);
+      });
+    }
+
+    async function fetchWithRetry(url, options, retries = 3) {
+      for (let i = 0; i < retries; i++) {
+        try {
+          const response = await fetch(url, options);
+          if (response.ok) {
+            return response.json();
+          }
+          if (response.status === 429) {
+            const delay = Math.pow(2, i) * 1000;
+            console.warn(`Rate limit exceeded. Retrying in ${delay}ms...`);
+            await new Promise(resolve => setTimeout(resolve, delay));
+            continue;
+          }
+          throw new Error(`API error: ${response.status} ${response.statusText}`);
+        } catch (error) {
+          if (i === retries - 1) {
+            throw error;
+          }
+          const delay = Math.pow(2, i) * 1000;
+          await new Promise(resolve => setTimeout(resolve, delay));
+        }
+      }
+    }
+
+    function updateHeaderAuthDisplay() {
+      const authButtons = document.getElementById('auth-buttons');
+      const userInfo = document.getElementById('user-info');
+      const userGreeting = document.getElementById('user-greeting');
+      const homeTeaser = document.getElementById('home-wellness-teaser');
+
+      if (isLoggedIn) {
+        authButtons?.classList.add('hidden');
+        userInfo?.classList.remove('hidden');
+        userInfo?.classList.add('flex');
+        if (userGreeting) userGreeting.textContent = `Hey, ${loggedInUser}!`;
+        if (homeTeaser) homeTeaser.style.display = 'inline-block';
+      } else {
+        authButtons?.classList.remove('hidden');
+        userInfo?.classList.add('hidden');
+        userInfo?.classList.remove('flex');
+        if (homeTeaser) homeTeaser.style.display = 'none';
+      }
+      if (typeof lucide !== 'undefined') lucide.createIcons();
+    }
+
+    function applyAccentColor(colorName) {
+      let color, hover;
+      switch (colorName) {
+        case 'Teal':
+          color = '#2dd4bf';
+          hover = '#14b8a6';
+          break;
+        case 'Indigo':
+          color = '#818cf8';
+          hover = '#6366f1';
+          break;
+        case 'Pink':
+          color = '#f472b6';
+          hover = '#ec4899';
+          break;
+        default:
+          color = '#2dd4bf';
+          hover = '#14b8a6';
+      }
+
+      document.documentElement.style.setProperty('--accent-color', color);
+      document.documentElement.style.setProperty('--accent-color-hover', hover);
+      document.documentElement.style.setProperty('--accent-text', color);
+
+      if (dashboardChartInstance) renderDashboardChart();
+      if (plannerChartInstance) {
+        const plannerTitle = document.getElementById('planner-title');
+        if (plannerTitle) {
+          renderPlannerChart(plannerTitle.textContent.includes('Nutrition') ? 'Nutrition' : 'Workout');
+        }
+      }
+    }
+
+    function toggleTheme() {
+      const html = document.documentElement;
+      currentTheme = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+      html.setAttribute('data-theme', currentTheme);
+      localStorage.setItem('theme', currentTheme);
+
+      if (dashboardChartInstance) renderDashboardChart();
+      if (plannerChartInstance) {
+        const plannerTitle = document.getElementById('planner-title');
+        if (plannerTitle) {
+          renderPlannerChart(plannerTitle.textContent.includes('Nutrition') ? 'Nutrition' : 'Workout');
+        }
+      }
+
+      hideModal();
+      showModal('Theme Switched', `Theme changed to **${currentTheme.toUpperCase()}** mode.`, 'OK');
+    }
+
+    // =======================================================
+    // 5. WINDOW ONLOAD (FIXED)
+    // =======================================================
+
+    window.onload = async () => {
+      const savedTheme = localStorage.getItem('theme') || 'dark';
+      document.documentElement.setAttribute('data-theme', savedTheme);
+      currentTheme = savedTheme;
+
+      // Critical: Check login status FIRST
+      await checkAuthStatus();
+
+      // Update header (shows user name / login buttons)
+      updateHeaderAuthDisplay();
+
+      // Apply accent color
+      applyAccentColor('Teal');
+
+      if (typeof lucide !== 'undefined') lucide.createIcons();
+      updateHeaderAuthDisplay();
+      applyAccentColor('Teal');
+
+      // Speech recognition setup
+      if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+        recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+        recognition.continuous = false;
+        recognition.interimResults = false;
+        recognition.lang = 'en-US';
+
+        recognition.onstart = () => {
+          isListening = true;
+          const micButton = document.getElementById('mic-button');
+          if (micButton) micButton.classList.add('mic-active');
+        };
+
+        recognition.onresult = (event) => {
+          const transcript = event.results[0][0].transcript;
+          sendChat(null, transcript);
+        };
+
+        recognition.onend = () => {
+          isListening = false;
+          const micButton = document.getElementById('mic-button');
+          if (micButton) micButton.classList.remove('mic-active');
+        };
+
+        checkAuthAndShowDashboard();
+        recognition.onerror = (event) => {
+          isListening = false;
+          const micButton = document.getElementById('mic-button');
+          if (micButton) micButton.classList.remove('mic-active');
+          console.error('Speech recognition error:', event.error);
+        };
+      }
+    };
+
+    function toggleVoiceInput() {
+      if (!recognition) {
+        showModal('Voice Unavailable', 'Your browser does not support the Web Speech API required for voice chat.', 'OK');
+        return;
+      }
+
+      if (isListening) {
+        recognition.stop();
+      } else {
+        try {
+          recognition.start();
+        } catch (e) {
+          isListening = false;
+          const micButton = document.getElementById('mic-button');
+          if (micButton) micButton.classList.remove('mic-active');
+          showModal('Mic In Use', 'The microphone is already in use or access was denied. Please check permissions.', 'OK');
+        }
+      }
+    }
+
+    function handleImageUpload(event) {
+      const file = event.target.files?.[0];
+      if (file) {
+        fileToBase64(file).then(base64Data => {
+          base64ImageFile = base64Data;
+          event.target.value = '';
+          showModal(
+            'Image Ready for AI',
+            'Image uploaded successfully! Please type your question or request (e.g., "Analyze this meal for calorie estimate" or "What is this plant?") and hit send. The image will be included with your text.',
+            'Got It'
+          );
+        }).catch(error => {
+          console.error("Image processing error:", error);
+          showModal('Upload Failed', 'Could not process the image file. Please try again.', 'OK');
+        });
+      }
+    }
+
+    // =======================================================
+    // 6. DASHBOARD & SCORING FUNCTIONS
+    // =======================================================
+
+    function calculateAndRenderScores() {
+      const totalSteps = mockActivities
+        .filter(a => a.metric === 'STEPS')
+        .reduce((sum, a) => sum + (parseInt(a.value) || 0), 0);
+
+      let newActivityScore = Math.min(100, 85 + Math.floor(totalSteps / 10000));
+      const mindfulCount = mockActivities.filter(a => a.metric === 'MEDITATION').length;
+      let newStressScore = Math.min(100, 79 + (mindfulCount * 5));
+
+      healthScores.activity = newActivityScore;
+      healthScores.stress = newStressScore;
+
+      const totalScore = (healthScores.activity + healthScores.sleep + healthScores.stress + healthScores.nutrition) / 4;
+      const roundedScore = Math.round(totalScore);
+
+      const overallScoreEl = document.getElementById('overall-score');
+      if (overallScoreEl) overallScoreEl.textContent = roundedScore;
+
+      const scoreEls = {
+        'score-activity': healthScores.activity,
+        'score-sleep': healthScores.sleep,
+        'score-stress': healthScores.stress,
+        'score-nutrition': healthScores.nutrition
+      };
+
+      Object.entries(scoreEls).forEach(([id, value]) => {
+        const el = document.getElementById(id);
+        if (el) el.textContent = value;
+      });
+
+      const homeScoreDisplay = document.getElementById('home-score-display');
+      if (homeScoreDisplay) homeScoreDisplay.textContent = `${roundedScore}/100`;
+
+      renderGoalsAndActivities();
+      renderDashboardChart();
+    }
+
+    function checkAuthAndShowDashboard() {
+      const prompt = document.getElementById('dashboard-auth-prompt');
+      const content = document.getElementById('dashboard-content');
+
+      if (isLoggedIn) {
+        prompt?.classList.add('hidden');
+        content?.classList.remove('hidden');
+        // Refresh all dynamic data
+        setTimeout(() => {
+          calculateAndRenderScores();
+          renderGoalsAndActivities();
+          renderMedications();
+        }, 100);
+      } else {
+        prompt?.classList.remove('hidden');
+        content?.classList.add('hidden');
+      }
+
+      if (typeof lucide !== 'undefined') lucide.createIcons();
+    }
+
+    function renderGoalsAndActivities() {
+      const goalsContainer = document.querySelector('#dashboard-content .card:nth-child(2) .space-y-4');
+      if (goalsContainer) {
+        goalsContainer.innerHTML = mockGoals.map(goal => {
+          const percentage = (goal.current / goal.target) * 100;
+          const width = Math.min(100, percentage);
+          const color = percentage >= 100 ? 'bg-green-500' : 'color-bg-accent';
+          const textColor = 'color-accent-text';
+
+          return `
+                <div>
+                    <div class="flex justify-between items-center text-sm mb-1">
+                        <span class="font-medium" style="color: var(--text-primary);">${goal.name}</span>
+                        <span class="${textColor} font-bold">${goal.type === 'Sleep' ? `${goal.current}h 15m` : `${Math.floor(percentage)}%`}</span>
+                    </div>
+                    <div class="w-full bg-gray-700 rounded-full h-2.5">
+                        <div class="${color} h-2.5 rounded-full transition-all duration-500" style="width: ${width}%"></div>
+                    </div>
+                </div>
+            `;
+        }).join('');
+      }
+
+      const activityFeed = document.querySelector('#dashboard-content .card:nth-child(3) ul.space-y-3');
+      if (activityFeed) {
+        activityFeed.innerHTML = mockActivities.slice().reverse().slice(0, 3).map(activity => {
+          let icon, label, time, color;
+
+          const activityMeta = {
+            'STEPS': { icon: 'footprints', time: '4 hours ago', color: 'text-green-400' },
+            'WEIGHT': { icon: 'scale', time: '5 hours ago', color: 'text-yellow-400' },
+            'SLEEP': { icon: 'moon', time: '4 hours ago', color: 'text-indigo-400' },
+            'BP': { icon: 'heart-pulse', time: 'Yesterday', color: 'text-red-400' },
+            'MEDITATION': { icon: 'lotus', time: 'Just Now', color: 'text-pink-400' },
+            'NUTRITION': { icon: 'apple', time: 'Just Now', color: 'color-accent-text' },
+            'WORKOUT': { icon: 'dumbbell', time: 'Just Now', color: 'color-accent-text' }
+          };
+
+          const meta = activityMeta[activity.metric] || { icon: 'bolt', time: 'Just Now', color: 'text-white' };
+          icon = meta.icon;
+          time = meta.time;
+          color = meta.color;
+          label = `Logged ${activity.metric}: ${activity.value}.`;
+
+          return `
+                <li class="flex items-center space-x-3 text-sm">
+                    <i data-lucide="${icon}" class="w-5 h-5 ${color}"></i>
+                    <span class="flex-1" style="color: var(--text-primary);">${label}</span>
+                    <span class="text-xs text-gray-400">${time}</span>
+                </li>
+            `;
+        }).join('');
+      }
+
+      const activityDot = document.getElementById('activity-dot');
+      if (activityDot) {
+        if (mockActivities.length > 3 || hasNewActivity) {
+          activityDot.classList.remove('hidden');
+          activityDot.classList.add('activity-dot');
+        } else {
+          activityDot.classList.add('hidden');
+          activityDot.classList.remove('activity-dot');
+        }
+      }
+
+      if (typeof lucide !== 'undefined') { lucide.createIcons(); }
+    }
+
+    function renderDashboardChart() {
+      const ctx = document.getElementById('weeklyPerformanceChart');
+      if (!ctx) return;
+
+      if (dashboardChartInstance) {
+        dashboardChartInstance.destroy();
+        dashboardChartInstance = null;
+      }
+
+      const accentColor = getComputedStyle(document.documentElement).getPropertyValue('--accent-color').trim();
+      const textColor = getComputedStyle(document.documentElement).getPropertyValue('--text-primary').trim();
+      const gridColor = currentTheme === 'dark' ? '#2d333b' : '#e5e7eb';
+
+      const data = {
+        labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+        datasets: [
+          {
+            label: 'Steps (x1000)',
+            data: [8, 12, 10, 15, 9, 11, 14],
+            backgroundColor: accentColor,
+            borderColor: accentColor,
+            yAxisID: 'y',
+            tension: 0.3,
+            type: 'bar',
+            borderRadius: 5
+          },
+          {
+            label: 'Sleep Quality (%)',
+            data: [85, 90, 80, 75, 95, 88, 92],
+            backgroundColor: '#a78bfa',
+            borderColor: '#a78bfa',
+            yAxisID: 'y1',
+            tension: 0.4,
+            pointRadius: 5,
+            type: 'line'
+          }
+        ]
+      };
+
+      dashboardChartInstance = new Chart(ctx, {
+        type: 'line',
+        data: data,
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          interaction: {
+            mode: 'index',
+            intersect: false,
+          },
+          scales: {
+            y: {
+              type: 'linear',
+              display: true,
+              position: 'left',
+              title: { display: true, text: 'Steps (x1000)', color: accentColor },
+              grid: { color: gridColor },
+              ticks: { color: textColor }
+            },
+            y1: {
+              type: 'linear',
+              display: true,
+              position: 'right',
+              title: { display: true, text: 'Sleep Quality (%)', color: '#a78bfa' },
+              grid: { drawOnChartArea: false, color: gridColor },
+              ticks: { color: textColor }
+            },
+            x: {
+              grid: { display: false },
+              ticks: { color: textColor }
+            }
+          },
+          plugins: {
+            legend: { labels: { color: textColor } },
+            tooltip: {
+              backgroundColor: currentTheme === 'dark' ? '#1f2937' : '#ffffff',
+              titleColor: currentTheme === 'dark' ? '#fff' : '#1f2937',
+              bodyColor: textColor,
+              borderColor: accentColor,
+              borderWidth: 1
+            },
+            title: {
+              display: true,
+              text: 'Weekly Health Trend',
+              color: textColor
+            }
+          }
+        },
+      });
+    }
+
+    function renderPlannerChart(plannerType) {
+      const ctx = document.getElementById('longTermChart');
+      if (!ctx) return;
+
+      if (plannerChartInstance) {
+        plannerChartInstance.destroy();
+        plannerChartInstance = null;
+      }
+
+      const accentColor = getComputedStyle(document.documentElement).getPropertyValue('--accent-color').trim();
+      const textColor = getComputedStyle(document.documentElement).getPropertyValue('--text-primary').trim();
+      const gridColor = currentTheme === 'dark' ? '#2d333b' : '#e5e7eb';
+
+      const dataLabel = plannerType === 'Nutrition' ? 'Weight (kg)' : 'Strength Score (RM)';
+      const chartData = plannerType === 'Nutrition'
+        ? [85, 84.5, 83, 83.5, 82, 81.5, 80.8, 80]
+        : [50, 55, 60, 65, 63, 70, 75, 80];
+      const chartColor = plannerType === 'Nutrition' ? accentColor : '#a78bfa';
+
+      plannerChartInstance = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4', 'Week 5', 'Week 6', 'Week 7', 'Week 8'],
+          datasets: [{
+            label: dataLabel,
+            data: chartData,
+            borderColor: chartColor,
+            backgroundColor: chartColor + '40',
+            tension: 0.4,
+            fill: true,
+            pointRadius: 5,
+            pointHoverRadius: 7,
+            pointBackgroundColor: currentTheme === 'dark' ? '#161b22' : '#ffffff',
+            pointBorderColor: chartColor
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+            y: {
+              beginAtZero: false,
+              title: {
+                display: true,
+                text: dataLabel,
+                color: textColor
+              },
+              grid: {
+                color: gridColor,
+              },
+              ticks: {
+                color: textColor
+              }
+            },
+            x: {
+              grid: {
+                display: false,
+              },
+              ticks: {
+                color: textColor
+              }
+            }
+          },
+          plugins: {
+            legend: {
+              display: true,
+              labels: {
+                color: textColor
+              }
+            },
+            title: {
+              display: true,
+              text: plannerType === 'Nutrition' ? '8-Week Weight Progress' : '8-Week Strength Progression',
+              color: textColor
+            },
+            tooltip: {
+              backgroundColor: currentTheme === 'dark' ? '#1f2937' : '#ffffff',
+              titleColor: currentTheme === 'dark' ? '#fff' : '#1f2937',
+              bodyColor: textColor,
+              borderColor: accentColor,
+              borderWidth: 1
+            },
+          }
+        }
+      });
+    }
+
+    // =======================================================
+    // 7. VIEW MANAGEMENT
+    // =======================================================
+
+    function showView(viewId) {
+      const views = document.querySelectorAll('.view');
+      views.forEach(view => view.classList.remove('active'));
+
+      const targetView = document.getElementById(viewId + '-view');
+      if (targetView) {
+        targetView.classList.add('active');
+        window.scrollTo(0, 0);
+        history.pushState({ view: viewId }, '', '/' + (viewId === 'home' ? '' : viewId));
+      }
+
+      // This line is crucial
+      if (viewId === 'dashboard') {
+        checkAuthAndShowDashboard();
+      }
+
+      const mobileMenu = document.getElementById('mobile-menu');
+      if (mobileMenu && !mobileMenu.classList.contains('hidden')) {
+        mobileMenu.classList.add('hidden');
+      }
+
+      if (viewId !== 'dashboard') {
+        hasNewActivity = false;
+        renderGoalsAndActivities();
+      }
+
+      if (typeof lucide !== 'undefined') { lucide.createIcons(); }
+    }
+
+    // =======================================================
+    // 8. MODAL FUNCTIONS
+    // =======================================================
+
+    function showModal(title, message, buttonText = 'Close', modalClass = 'modal-content', onConfirm = null) {
+      const modalContent = document.getElementById('universal-modal-content');
+      if (!modalContent) return;
+
+      modalContent.className = '';
+      modalContent.classList.add(modalClass.includes('modal-content') ? 'modal-content' : modalClass);
+
+      let buttonHtml = `<button onclick="hideModal()" class="bg-gray-700 hover:bg-gray-600 text-white font-semibold py-2 px-4 rounded-lg transition duration-150">${buttonText}</button>`;
+
+      if (onConfirm) {
+        const confirmButtonClass = buttonText.toLowerCase().includes('delete') ? 'bg-red-600 hover:bg-red-700 text-white' : 'color-bg-accent color-bg-accent-hover text-black';
+        buttonHtml = `<button onclick="hideModal(); ${onConfirm}()" class="${confirmButtonClass} font-bold py-2 px-4 rounded-lg transition duration-150 mr-3">${buttonText}</button>`;
+        buttonHtml += `<button onclick="hideModal()" class="bg-gray-700 hover:bg-gray-600 text-white font-semibold py-2 px-4 rounded-lg transition duration-150">Cancel</button>`;
+      }
+
+      modalContent.innerHTML = `
+        <button onclick="hideModal()" class="float-right text-gray-400 hover:text-white text-3xl leading-none" aria-label="Close modal">&times;</button>
+        <h3 class="text-2xl font-bold mb-3" style="color: var(--text-primary);">${title}</h3>
+        <p class="text-gray-400 mb-6">${message}</p>
+        <div class="flex justify-end">
+            ${buttonHtml}
+        </div>
+    `;
+      const backdrop = document.getElementById('universal-modal-backdrop');
+      if (backdrop) backdrop.style.display = 'flex';
+      if (typeof lucide !== 'undefined') { lucide.createIcons(); }
+    }
+
+    function hideModal() {
+      const backdrop = document.getElementById('universal-modal-backdrop');
+      if (backdrop) backdrop.style.display = 'none';
+    }
+
+    function showSettingsModal() {
+      const themeIcon = currentTheme === 'dark' ? 'sun' : 'moon';
+      const themeLabel = currentTheme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode';
+      const content = `
+        <button onclick="hideModal()" class="float-right text-gray-400 hover:text-white text-3xl leading-none" aria-label="Close settings modal">&times;</button>
+        <h3 class="text-2xl font-bold mb-4" style="color: var(--text-primary);"><i data-lucide="settings" class="w-7 h-7 color-accent-text mr-2"></i><span>App Settings</span></h3>
+        <p class="text-gray-400 mb-6">General, data, and privacy features for a personalized experience.</p>
+
+        <div class="space-y-4">
+            <div class="p-3 bg-gray-800 rounded-lg">
+                <h4 class="font-bold mb-2 flex items-center space-x-2" style="color: var(--text-primary);"><i data-lucide="paint-roller" class="w-5 h-5 text-purple-400"></i><span>Appearance</span></h4>
+                <div class="space-y-2 text-sm text-gray-400">
+                    <button onclick="toggleTheme()" class="w-full text-left p-2 rounded-lg bg-gray-700 hover:bg-gray-600 flex justify-between items-center text-white font-semibold">
+                        <span>${themeLabel}</span>
+                        <i data-lucide="${themeIcon}" class="w-5 h-5"></i>
+                    </button>
+                    <div class="flex justify-between items-center">
+                        <span>Color Accent</span>
+                        <select onchange="applyAccentColor(this.value)" class="bg-gray-700 border border-gray-600 rounded-lg p-1 text-xs text-white focus:ring-accent-teal">
+                            <option value="Teal" ${getComputedStyle(document.documentElement).getPropertyValue('--accent-color').trim() === '#2dd4bf' ? 'selected' : ''}>Teal (Default)</option>
+                            <option value="Indigo" ${getComputedStyle(document.documentElement).getPropertyValue('--accent-color').trim() === '#818cf8' ? 'selected' : ''}>Indigo</option>
+                            <option value="Pink" ${getComputedStyle(document.documentElement).getPropertyValue('--accent-color').trim() === '#f472b6' ? 'selected' : ''}>Pink</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="p-3 bg-gray-800 rounded-lg">
+                <h4 class="font-bold mb-2 flex items-center space-x-2" style="color: var(--text-primary);"><i data-lucide="database" class="w-5 h-5 text-red-400"></i><span>Data & Privacy</span></h4>
+                <div class="space-y-2 text-sm text-gray-400">
+                    <button onclick="hideModal(); showDataPermissionsModal()" class="w-full text-left p-2 rounded-lg bg-gray-700 hover:bg-gray-600 text-white">
+                        Manage Data Permissions
+                    </button>
+                    <button onclick="hideModal(); showDataExportModal()" class="w-full text-left p-2 rounded-lg bg-gray-700 hover:bg-gray-600 text-white">
+                        Export All Health Data
+                    </button>
+                    <button onclick="showModal('Erase Data', 'This will permanently delete ALL your health data. Are you absolutely sure?', 'Delete All', 'modal-content', 'eraseAllData')" class="w-full text-left p-2 rounded-lg bg-red-800 hover:bg-red-700 text-red-300 font-bold">
+                        Erase All Data
+                    </button>
+                </div>
+            </div>
+
+            <button onclick="hideModal(); showDeviceLinkModal()" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-2.5 rounded-lg transition duration-150 flex items-center justify-center space-x-2">
+                <i data-lucide="watch" class="w-5 h-5"></i>
+                <span>Connect/Manage Smart Device</span>
+            </button>
+        </div>
+    `;
+      const modalContent = document.getElementById('universal-modal-content');
+      if (modalContent) {
+        modalContent.innerHTML = content;
+        modalContent.classList.remove('modal-lg');
+        document.getElementById('universal-modal-backdrop').style.display = 'flex';
+        if (typeof lucide !== 'undefined') { lucide.createIcons(); }
+      }
+    }
+
+    // =======================================================
+    // 9. AUTH FUNCTIONS (LOGIN/SIGNUP)
+    // =======================================================
+
+    async function loginUser(event) {
+      event.preventDefault();
+      const emailInput = document.getElementById('login-email');
+      const passwordInput = document.getElementById('login-password');
+
+      if (!emailInput || !passwordInput) return;
+
+      const email = emailInput.value.trim().toLowerCase();
+      const password = passwordInput.value;
+
+      if (!email || !password) {
+        showModal('Error', 'Enter email and password', 'OK');
+        return;
+      }
+
+      const btn = event.target.querySelector('button[type="submit"]');
+      if (!btn) return;
+
+      const old = btn.innerHTML;
+      btn.innerHTML = 'Logging in...';
+      btn.disabled = true;
+
+      try {
+        const res = await fetch('/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify({ email, password })
+        });
+        const data = await res.json();
+
+        if (res.ok && data.token) {
+          localStorage.setItem('token', data.token);
+          localStorage.setItem('user', JSON.stringify(data.user));
+          loggedInUser = data.user.name || email.split('@')[0];
+          setLoggedIn(true, loggedInUser);
+          hideAuthModal();
+          showView('dashboard');
+          showModal('Welcome!', `Hey ${loggedInUser}! 👋`, 'Go to Dashboard');
+        } else {
+          throw new Error(data.message || 'Login failed');
+        }
+      } catch (err) {
+        showModal('Login Failed', err.message, 'Try Again');
+      } finally {
+        btn.innerHTML = old;
+        btn.disabled = false;
+      }
+    }
+
+    async function signUpUser(event) {
+      event.preventDefault();
+      const emailInput = document.getElementById('signup-email');
+      const passwordInput = document.getElementById('signup-password');
+
+      if (!emailInput || !passwordInput) return;
+
+      const email = emailInput.value.trim().toLowerCase();
+      const password = passwordInput.value;
+
+      if (!email || password.length < 8) {
+        showModal('Invalid', 'Valid email + 8+ char password required', 'OK');
+        return;
+      }
+
+      const btn = event.target.querySelector('button[type="submit"]');
+      if (!btn) return;
+
+      const old = btn.innerHTML;
+      btn.innerHTML = 'Creating...';
+      btn.disabled = true;
+
+      try {
+        const res = await fetch('/register', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify({ email, password })
+        });
+        const data = await res.json();
+
+        if (res.ok && data.token) {
+          localStorage.setItem('token', data.token);
+          localStorage.setItem('user', JSON.stringify(data.user));
+          loggedInUser = email.split('@')[0];
+          setLoggedIn(true, loggedInUser);
+          hideAuthModal();
+          showView('dashboard');
+          showModal('Welcome to PULSE! 🎉', 'Your health journey starts now.', 'Start Tracking');
+        } else {
+          throw new Error(data.message || 'Signup failed');
+        }
+      } catch (err) {
+        showModal('Error', err.message, 'OK');
+      } finally {
+        btn.innerHTML = old;
+        btn.disabled = false;
+      }
+    }
+
+    function setLoggedIn(status, username = '') {
+      isLoggedIn = status;
+      loggedInUser = username || loggedInUser;
+      updateHeaderAuthDisplay();
+      if (!status) {
+        showView('home');
+      }
+    }
+
+    // =======================================================
+    // 10. DATA MANAGEMENT FUNCTIONS
+    // =======================================================
+
+    function showManualDataModal() {
+      const content = `
+        <button onclick="hideModal()" class="float-right text-gray-400 hover:text-white text-3xl leading-none" aria-label="Close manual data modal">&times;</button>
+        <h3 class="text-2xl font-bold mb-4" style="color: var(--text-primary);">Manual Data Entry</h3>
+        <form onsubmit="submitManualData(event)" class="space-y-4">
+            <div class="input-group">
+                <label for="metric" class="block text-sm font-medium mb-1">Metric</label>
+                <i data-lucide="gauge" class="w-5 h-5"></i>
+                <select id="metric" class="w-full bg-gray-800 border border-gray-700 rounded-lg p-3 text-white focus:ring-[var(--accent-color)]" required>
+                    <option value="steps">Steps Count</option>
+                    <option value="weight">Weight (kg)</option>
+                    <option value="sleep">Sleep Duration (hours)</option>
+                    <option value="bp">Blood Pressure (systolic/diastolic)</option>
+                    <option value="sugar">Blood Sugar (mg/dL)</option>
+                    <option value="mindfulness">Mindfulness/Meditation (minutes)</option>
+                </select>
+            </div>
+            <div class="input-group">
+                <label for="value" class="block text-sm font-medium mb-1">Value</label>
+                <i data-lucide="hash" class="w-5 h-5"></i>
+                <input type="text" id="value" placeholder="Enter value(s) (e.g., 105/70 for BP)" class="w-full bg-gray-800 border border-gray-700 rounded-lg p-3 text-white focus:ring-[var(--accent-color)]" required>
+            </div>
+            <button type="submit" class="w-full color-bg-accent color-bg-accent-hover text-black font-bold py-2.5 rounded-lg transition duration-150">Submit Data</button>
+        </form>
+    `;
+      const modalContent = document.getElementById('universal-modal-content');
+      if (modalContent) {
+        modalContent.innerHTML = content;
+        modalContent.classList.remove('modal-lg');
+        document.getElementById('universal-modal-backdrop').style.display = 'flex';
+        if (typeof lucide !== 'undefined') { lucide.createIcons(); }
+      }
+    }
+
+    function submitManualData(event) {
+      if (event) event.preventDefault();
+
+      const metricInput = document.getElementById('metric');
+      const valueInput = document.getElementById('value');
+
+      if (!metricInput || !valueInput) return;
+
+      const metricValue = metricInput.value;
+      const value = valueInput.value;
+
+      let activityType, metricName;
+
+      const metricMap = {
+        'steps': { type: 'Activity', name: 'STEPS' },
+        'weight': { type: 'Activity', name: 'WEIGHT' },
+        'sleep': { type: 'Sleep', name: 'SLEEP' },
+        'mindfulness': { type: 'Mindfulness', name: 'MEDITATION' }
+      };
+
+      if (metricMap[metricValue]) {
+        activityType = metricMap[metricValue].type;
+        metricName = metricMap[metricValue].name;
+      } else {
+        activityType = 'Health';
+        metricName = metricValue.toUpperCase();
+      }
+
+      mockActivities.push({
+        id: nextActivityId++,
+        metric: metricName,
+        value: value,
+        date: new Date().toLocaleDateString(),
+        type: activityType
+      });
+
+      hasNewActivity = true;
+
+      hideModal();
+      showModal('Data Added', `Successfully logged **${value}** for **${metricName}**. Your dashboard is updating.`, 'View Dashboard');
+
+      calculateAndRenderScores();
+    }
+
+    function eraseAllData() {
+      mockActivities.length = 0;
+      mockGoals.length = 0;
+      mockMedications.length = 0;
+      nextActivityId = 1;
+      nextGoalId = 1;
+      nextMedicationId = 101;
+      healthScores = { activity: 50, sleep: 50, stress: 50, nutrition: 50 };
+      isLoggedIn = false;
+      loggedInUser = '';
+
+      updateHeaderAuthDisplay();
+      calculateAndRenderScores();
+      showView('home');
+      showModal('Data Erased', 'All personalized data has been permanently deleted. Your privacy is secured.', 'Restart App');
+    }
+
+    // =======================================================
+    // 11. PLANNER FUNCTIONS
+    // =======================================================
+
+    function openPlanner(plannerName) {
+      if (plannerName === 'Content Library') {
+        showModal('Content Library', 'Accessing the curated library of health articles and videos verified by experts. This takes you to our blog and resources section.', 'Browse Content');
+        return;
+      }
+
+      const titleElement = document.getElementById('planner-title');
+      const tasksElement = document.getElementById('planner-tasks');
+      const addTaskButton = document.getElementById('add-task-button');
+      const aiToolsCard = document.getElementById('ai-planner-tools-card');
+
+      if (!titleElement || !tasksElement || !addTaskButton || !aiToolsCard) return;
+
+      const plannerCardIcon = plannerName === 'Nutrition' ? 'apple' : 'activity';
+
+      titleElement.innerHTML = `<i data-lucide="${plannerCardIcon}" class="w-9 h-9 mr-3"></i> ${plannerName} Planner`;
+      addTaskButton.setAttribute('onclick', `showPlannerLogModal('${plannerName}')`);
+
+      let aiToolsHtml = '';
+      if (plannerName === 'Nutrition') {
+        aiToolsHtml = `
+            <h3 class="text-xl font-semibold mb-4 flex items-center space-x-2">
+                <i data-lucide="scan" class="w-6 h-6 text-yellow-400"></i>
+                <span>AI Meal Generation & Calorie Check</span>
+            </h3>
+            <p class="text-sm text-gray-400 mb-4">Generate 3 healthy meal ideas based on your calorie target (1800 kcal) and existing restrictions (Vegetarian, Low-Sodium).</p>
+            <div class="flex flex-col sm:flex-row gap-3">
+                <button onclick="aiPlannerAction('Generate Meal')" class="flex-1 bg-yellow-600 hover:bg-yellow-700 text-black font-bold py-2 rounded-lg transition duration-150 transform hover:scale-[1.01]">
+                    Generate 3-Day Meal Plan
+                </button>
+                <button onclick="aiPlannerAction('Calorie Check')" class="flex-1 bg-gray-700 hover:bg-gray-600 text-white font-bold py-2 rounded-lg transition duration-150 transform hover:scale-[1.01]">
+                    Calorie/Macro Audit
+                </button>
+            </div>
+        `;
+      } else if (plannerName === 'Workout') {
+        aiToolsHtml = `
+            <h3 class="text-xl font-semibold mb-4 flex items-center space-x-2">
+                <i data-lucide="activity" class="w-6 h-6 text-yellow-400"></i>
+                <span>AI Workout Optimization</span>
+            </h3>
+            <p class="text-sm text-gray-400 mb-4">Analyze your recent performance data to suggest optimal weight, reps, and rest times for your next session (Target: Strength Gain).</p>
+            <div class="flex flex-col sm:flex-row gap-3">
+                <button onclick="aiPlannerAction('Optimize Workout')" class="flex-1 bg-yellow-600 hover:bg-yellow-700 text-black font-bold py-2 rounded-lg transition duration-150 transform hover:scale-[1.01]">
+                    Optimize Today's Routine
+                </button>
+                <button onclick="aiPlannerAction('Injury Prevention')" class="flex-1 bg-gray-700 hover:bg-gray-600 text-white font-bold py-2 rounded-lg transition duration-150 transform hover:scale-[1.01]">
+                    Injury Risk Assessment
+                </button>
+            </div>
+        `;
+      }
+      aiToolsCard.innerHTML = aiToolsHtml;
+
+      const tasks = plannerName === 'Nutrition' ? NUTRITION_TASKS : WORKOUT_TASKS;
+      tasksElement.innerHTML = tasks.map((task, index) => `
+        <li class="flex items-center space-x-3 text-sm p-2 bg-gray-700/50 rounded-lg hover:bg-gray-700 transition duration-150">
+            <input type="checkbox" ${task.completed ? 'checked' : ''} onchange="toggleTaskCompletion('${plannerName}', ${index})" class="h-4 w-4 rounded border-gray-700 bg-gray-700 text-accent-teal focus:ring-[var(--accent-color)]">
+            <i data-lucide="${task.icon}" class="w-5 h-5 ${task.completed ? 'text-green-500' : 'text-gray-400'}"></i>
+            <span class="flex-1 ${task.completed ? 'line-through text-gray-500' : 'text-white'}">${task.name}</span>
+        </li>
+    `).join('');
+
+      showView('planner');
+      setTimeout(() => renderPlannerChart(plannerName), 100);
+
+      if (typeof lucide !== 'undefined') { lucide.createIcons(); }
+    }
+
+    function toggleTaskCompletion(plannerType, index) {
+      const tasks = plannerType === 'Nutrition' ? NUTRITION_TASKS : WORKOUT_TASKS;
+      if (tasks[index]) {
+        tasks[index].completed = !tasks[index].completed;
+        openPlanner(plannerType);
+        showModal('Task Update', `Task marked as **${tasks[index].completed ? 'complete' : 'incomplete'}**. Good job!`, 'OK');
+      }
+    }
+
+    function aiPlannerAction(action) {
+      hideModal();
+      showModal('AI Action', `AI is running a **${action}** task based on your preferences and data. Results will appear in the tasks list shortly.`, 'Processing...');
+    }
+
+    function showPlannerLogModal(plannerType) {
+      const icon = plannerType === 'Nutrition' ? 'utensils' : 'dumbbell';
+      const metric = plannerType === 'Nutrition' ? 'Meal/Food Item' : 'Exercise/Set Count';
+      const placeholder = plannerType === 'Nutrition' ? 'e.g., Chicken Salad (450 kcal)' : 'e.g., 3x10 Squats (135 lbs)';
+
+      const content = `
+        <button onclick="hideModal()" class="float-right text-gray-400 hover:text-white text-3xl leading-none" aria-label="Close planner log modal">&times;</button>
+        <h3 class="text-2xl font-bold mb-4 text-white">Log ${plannerType} Entry</h3>
+        <form onsubmit="submitPlannerLog(event, '${plannerType}')" class="space-y-4">
+            <div class="input-group">
+                <label for="log-details" class="block text-sm font-medium mb-1">${metric}</label>
+                <i data-lucide="book-open" class="w-5 h-5"></i>
+                <input type="text" id="log-details" placeholder="${placeholder}" class="w-full bg-gray-800 border border-gray-700 rounded-lg p-3 text-white focus:ring-[var(--accent-color)]" required>
+            </div>
+            <div class="input-group">
+                <label for="log-value" class="block text-sm font-medium mb-1">Value (e.g., 450 kcal, 45 min)</label>
+                <i data-lucide="hash" class="w-5 h-5"></i>
+                <input type="text" id="log-value" placeholder="Enter quantitative data" class="w-full bg-gray-800 border border-gray-700 rounded-lg p-3 text-white focus:ring-[var(--accent-color)]" required>
+            </div>
+            <button type="submit" class="w-full color-bg-accent color-bg-accent-hover text-black font-bold py-2.5 rounded-lg transition duration-150 flex items-center justify-center space-x-2">
+                <i data-lucide="${icon}" class="w-5 h-5"></i>
+                <span>Log to Tracker</span>
+            </button>
+        </form>
+    `;
+      const modalContent = document.getElementById('universal-modal-content');
+      if (modalContent) {
+        modalContent.innerHTML = content;
+        modalContent.classList.remove('modal-lg');
+        document.getElementById('universal-modal-backdrop').style.display = 'flex';
+        if (typeof lucide !== 'undefined') { lucide.createIcons(); }
+      }
+    }
+
+    function submitPlannerLog(event, plannerType) {
+      if (event) event.preventDefault();
+
+      const detailsInput = document.getElementById('log-details');
+      const valueInput = document.getElementById('log-value');
+
+      if (!detailsInput || !valueInput) return;
+
+      const details = detailsInput.value;
+      const value = valueInput.value;
+
+      mockActivities.push({
+        id: nextActivityId++,
+        metric: plannerType.toUpperCase(),
+        value: details,
+        date: new Date().toLocaleDateString(),
+        type: plannerType
+      });
+
+      hasNewActivity = true;
+
+      hideModal();
+      showModal('Log Successful', `Successfully logged "${details} (${value})" to your ${plannerType} tracker. Progress updated!`, 'Great!');
+
+      calculateAndRenderScores();
+      openPlanner(plannerType);
+    }
+
+    // =======================================================
+    // 12. CHATBOT FUNCTIONS
+    // =======================================================
+
+    function showTypingIndicator() {
+      const chatHistory = document.getElementById('chat-history');
+      if (!chatHistory) return;
+
+      const typingIndicator = `
+        <div id="ai-typing-indicator" class="message ai-message">
+            <div class="ai-typing">
+                <i data-lucide="loader-2" class="w-4 h-4 mr-2"></i>
+                <span>PULSE AI is typing...</span>
+            </div>
+        </div>
+    `;
+      chatHistory.insertAdjacentHTML('beforeend', typingIndicator);
+      chatHistory.scrollTop = chatHistory.scrollHeight;
+      if (typeof lucide !== 'undefined') { lucide.createIcons(); }
+    }
+
+    function removeTypingIndicator() {
+      const indicator = document.getElementById('ai-typing-indicator');
+      if (indicator) {
+        indicator.remove();
+      }
+    }
+
+    function addMessage(text, sender) {
+      const chatHistory = document.getElementById('chat-history');
+      if (!chatHistory) return;
+
+      const bubbleClass = sender === 'user' ? 'user-bubble' : 'ai-bubble';
+      const messageClass = sender === 'user' ? 'user-message' : '';
+      const messageHtml = `
+        <div class="message ${messageClass}">
+            <div class="${bubbleClass}">${text}</div>
+        </div>
+    `;
+      chatHistory.insertAdjacentHTML('beforeend', messageHtml);
+      chatHistory.scrollTop = chatHistory.scrollHeight;
+    }
+
+    async function sendChat(event, voiceInput = null) {
+      if (event) event.preventDefault();
+
+      const chatInput = document.getElementById('chat-input');
+      if (!chatInput && !voiceInput) return;
+
+      const userText = voiceInput || chatInput?.value.trim();
+      if (!userText) return;
+
+      addMessage(userText, 'user');
+      if (chatInput) chatInput.value = '';
+
+      if (!apiKey || apiKey === "YOUR_GEMINI_API_KEY_HERE") {
+        removeTypingIndicator();
+        addMessage("Please configure your Gemini API key to use the AI assistant.", 'ai');
+        return;
+      }
+
+      showTypingIndicator();
+
+      try {
+        let contents = [{ parts: [{ text: userText }] }];
+        if (base64ImageFile) {
+          contents = [{
+            role: "user",
+            parts: [
+              { text: userText },
+              {
+                inlineData: {
+                  mimeType: "image/png",
+                  data: base64ImageFile
+                }
+              }
+            ]
+          }];
+          base64ImageFile = null;
+        }
+
+        const overallScore = document.getElementById('overall-score');
+        const payload = {
+          contents: contents,
+          tools: [{ "google_search": {} }],
+          systemInstruction: {
+            parts: [{
+              text: `You are PULSE AI, a friendly, knowledgeable, and privacy-conscious health assistant.
+                    Your goal is to provide helpful, non-diagnostic guidance based on general knowledge and the user's mock health data (Wellness Score: ${overallScore?.textContent || 88}/100, Activity: ${healthScores.activity}, Stress: ${healthScores.stress}).
+                    If the user asks for sensitive data or diagnosis, remind them to consult a medical professional. Keep responses concise and supportive.`
+            }]
+          },
+        };
+
+        const model = "gemini-2.0-flash-exp";
+        const apiUrl = geminiUrl(model);
+
+        const responseJson = await fetchWithRetry(apiUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        const candidate = responseJson.candidates?.[0];
+
+        if (candidate && candidate.content?.parts?.[0]?.text) {
+          let aiText = candidate.content.parts[0].text;
+          let sources = [];
+
+          const groundingMetadata = candidate.groundingMetadata;
+          if (groundingMetadata && groundingMetadata.groundingAttributions) {
+            sources = groundingMetadata.groundingAttributions
+              .map(attribution => ({
+                uri: attribution.web?.uri,
+                title: attribution.web?.title,
+              }))
+              .filter(source => source.uri && source.title);
+
+            if (sources.length > 0) {
+              aiText += "\n\n***\n**Sources:**\n";
+              sources.forEach((s, index) => {
+                aiText += `[${index + 1}. ${s.title}](${s.uri})\n`;
+              });
+            }
+          }
+
+          removeTypingIndicator();
+          addMessage(aiText, 'ai');
+
+        } else {
+          removeTypingIndicator();
+          addMessage("I apologize, but I received an empty response. Please try again or rephrase your question.", 'ai');
+        }
+
+      } catch (error) {
+        console.error("Gemini API call failed:", error);
+        removeTypingIndicator();
+        addMessage(`An error occurred while connecting to the AI assistant: ${error.message}. Please check your connection.`, 'ai');
+      }
+    }
+
+    // =======================================================
+    // 13. SPA ROUTING
+    // =======================================================
+
+    document.addEventListener('DOMContentLoaded', () => {
+      // Handle all navigation links
+      document.querySelectorAll('.nav-link').forEach(link => {
+        link.addEventListener('click', (e) => {
+          e.preventDefault();
+          const view = link.getAttribute('href').substring(1) || 'home';
+          showView(view);
+        });
+      });
+
+      // Handle browser back/forward buttons
+      window.addEventListener('popstate', (e) => {
+        const state = e.state || {};
+        const view = state.view || 'home';
+        showView(view);
+      });
+
+      // Initial view on load
+      const initialPath = window.location.pathname.substring(1) || 'home';
+      const initialView = ['home', 'dashboard', 'planner', 'medications', 'wellness', 'chatbot'].includes(initialPath) ? initialPath : 'home';
+      showView(initialView);
+
+      // Initialize icons one final time
+      if (typeof lucide !== 'undefined') lucide.createIcons();
+    });
+
+    // =======================================================
+    // 14. MEDICATION TRACKER FUNCTIONS
+    // =======================================================
+    function renderMedications() {
+      const container = document.getElementById('medications-list');
+      if (!container) return;
+
+      container.innerHTML = mockMedications.map(med => {
+        const isActive = med.status === 'Active';
+        const adherenceClass = med.adherence >= 90 ? 'text-green-400' : med.adherence >= 70 ? 'text-yellow-400' : 'text-red-400';
+        return `
+            <div class="bg-gray-800/50 rounded-xl p-5 hover:bg-gray-800 transition duration-200">
+                <div class="flex justify-between items-start mb-3">
+                    <h4 class="font-bold text-lg" style="color: var(--text-primary);">${med.name}</h4>
+                    <span class="text-xs px-3 py-1 rounded-full ${isActive ? 'bg-green-900 text-green-300' : 'bg-gray-700 text-gray-400'}">
+                        ${med.status}
+                    </span>
+                </div>
+                <div class="space-y-2 text-sm text-gray-400">
+                    <p><i data-lucide="clock" class="w-4 h-4 inline mr-2"></i>${med.schedule}</p>
+                    <p><i data-lucide="pill" class="w-4 h-4 inline mr-2"></i>Dosage: ${med.dosage} • ${med.frequency}</p>
+                    <p><i data-lucide="trending-up" class="w-4 h-4 inline mr-2"></i>
+                        Adherence: <span class="${adherenceClass} font-bold">${med.adherence}%</span>
+                    </p>
+                    ${isActive ? `<p class="text-pink-400 font-medium"><i data-lucide="bell" class="w-4 h-4 inline mr-2"></i>Next: ${med.nextDose}</p>` : ''}
+                </div>
+                ${isActive ? `
+                <div class="mt-4 flex gap-2">
+                    <button onclick="markDoseTaken(${med.id})" class="flex-1 bg-green-600 hover:bg-green-700 text-white font-bold py-2 rounded-lg text-sm transition duration-150">
+                        Mark Taken
+                    </button>
+                    <button onclick="snoozeDose(${med.id})" class="px-4 bg-gray-700 hover:bg-gray-600 text-white rounded-lg text-sm">
+                        Snooze
+                    </button>
+                </div>` : ''}
+            </div>
+        `;
+      }).join('');
+
+      if (typeof lucide !== 'undefined') lucide.createIcons();
+    }
+
+    function markDoseTaken(id) {
+      const med = mockMedications.find(m => m.id === id);
+      if (med) {
+        med.adherence = Math.min(100, med.adherence + 5);
+        showModal('Dose Logged', `Great job taking your **${med.name.split(' (')[0]}** on time! Keep it up! 💊`, 'Done');
+        renderMedications();
+      }
+    }
+
+    function snoozeDose(id) {
+      showModal('Dose Snoozed', 'Reminder snoozed for 30 minutes. Please remember to take your medication soon.', 'OK');
+    }
+
+    // Call on dashboard load or view change
+    document.getElementById('medications-view')?.addEventListener('click', renderMedications);
+
+    // =======================================================
+    // 15. WELLNESS STUDIO PLACEHOLDERS
+    // =======================================================
+    function playBreathingExercise() {
+      showModal('Breathing Exercise', 'Starting 4-7-8 breathing pattern...<br><br>Inhale for 4 seconds...<br>Hold for 7...<br>Exhale for 8...', 'Relaxing', 'modal-content', null);
+      // In real app: trigger audio/visual guide
+    }
+
+    function startBodyScan() {
+      showModal('Body Scan Starting', 'Lie down comfortably. We will guide you through a 5-minute progressive relaxation scan.', 'Begin');
+    }
+
+    // =======================================================
+    // 16. FINAL INITIALIZATION CALLS
+    // =======================================================
+    document.addEventListener('DOMContentLoaded', () => {
+      renderGoalsAndActivities();
+      renderMedications();
+      if (isLoggedIn) {
+        checkAuthAndShowDashboard();
+      }
+    });
+  </script>
+</body>
+
+</html>
