@@ -539,7 +539,7 @@
                     </p>
 
                     <!-- CTA Buttons -->
-                    <div class="flex justify-center space-x-4 mb-16">
+                    <div class="flex justify-center space-x-4 mb-16" id="new-user-cta-buttons">
                         <button onclick="showAuthModal('signup')"
                             class="color-bg-accent color-bg-accent-hover text-black font-extrabold py-3 px-8 rounded-full text-lg transition duration-300 shadow-xl transform hover:scale-105">
                             Start Your Free Trial
@@ -1919,6 +1919,7 @@
             const userInfo = document.getElementById('user-info');
             const userGreeting = document.getElementById('user-greeting');
             const homeTeaser = document.getElementById('home-wellness-teaser');
+            const newUser = document.getElementById('new-user-cta-buttons');
 
             if (isLoggedIn) {
                 authButtons?.classList.add('hidden');
@@ -1926,6 +1927,7 @@
                 userInfo?.classList.add('flex');
                 if (userGreeting) userGreeting.textContent = `Hey, ${loggedInUser}!`;
                 if (homeTeaser) homeTeaser.style.display = 'inline-block';
+                if (newUser) newUser.style.display = 'none';
             } else {
                 authButtons?.classList.remove('hidden');
                 userInfo?.classList.add('hidden');
@@ -2395,29 +2397,31 @@
             const views = document.querySelectorAll('.view');
             views.forEach(view => view.classList.remove('active'));
 
-            const targetView = document.getElementById(viewId + '-view');
+            let targetId = viewId + '-view';
+            if (viewId === 'home') targetId = 'home-view';
+
+            const targetView = document.getElementById(targetId);
             if (targetView) {
                 targetView.classList.add('active');
                 window.scrollTo(0, 0);
-                history.pushState({ view: viewId }, '', '/' + (viewId === 'home' ? '' : viewId));
+
+                // Update URL without reload
+                const path = viewId === 'home' ? '/' : '/' + viewId;
+                history.pushState({ view: viewId }, '', path);
             }
 
-            // This line is crucial
+            // Dashboard auth check
             if (viewId === 'dashboard') {
                 checkAuthAndShowDashboard();
             }
 
+            // Mobile menu close
             const mobileMenu = document.getElementById('mobile-menu');
             if (mobileMenu && !mobileMenu.classList.contains('hidden')) {
                 mobileMenu.classList.add('hidden');
             }
 
-            if (viewId !== 'dashboard') {
-                hasNewActivity = false;
-                renderGoalsAndActivities();
-            }
-
-            if (typeof lucide !== 'undefined') { lucide.createIcons(); }
+            if (typeof lucide !== 'undefined') lucide.createIcons();
         }
 
         // =======================================================
@@ -3025,24 +3029,47 @@
             document.querySelectorAll('.nav-link').forEach(link => {
                 link.addEventListener('click', (e) => {
                     e.preventDefault();
-                    const view = link.getAttribute('href').substring(1) || 'home';
+                    const view = link.getAttribute('data-view') || link.getAttribute('href').substring(1) || 'home';
                     showView(view);
                 });
             });
 
-            // Handle browser back/forward buttons
+            // ===== YE PART FIX KARO =====
+            const path = window.location.pathname.toLowerCase();
+            let currentView = 'home';
+
+            // Map URL path → view ID
+            const routeMap = {
+                '/': 'home',
+                '/home': 'home',
+                '/dashboard': 'dashboard',
+                '/booking': 'booking',
+                '/tools': 'tools',
+                '/environmental': 'environmental',
+                '/wellness': 'wellness',
+                '/connect': 'connect',
+                '/subscription': 'subscription',
+                '/planner': 'planner',
+                '/chatbot': 'chatbot',
+                '/medications': 'medications'
+            };
+
+            if (routeMap[path]) {
+                currentView = routeMap[path];
+            }
+
+            showView(currentView);
+
+            // Handle back/forward buttons
             window.addEventListener('popstate', (e) => {
                 const state = e.state || {};
                 const view = state.view || 'home';
                 showView(view);
             });
 
-            // Initial view on load
-            const initialPath = window.location.pathname.substring(1) || 'home';
-            const initialView = ['home', 'dashboard', 'planner', 'medications', 'wellness', 'chatbot'].includes(initialPath) ? initialPath : 'home';
-            showView(initialView);
+            // Push initial state
+            history.replaceState({ view: currentView }, '', window.location.pathname);
 
-            // Initialize icons one final time
             if (typeof lucide !== 'undefined') lucide.createIcons();
         });
 
